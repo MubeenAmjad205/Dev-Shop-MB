@@ -1,40 +1,34 @@
-import React from 'react';
+'use client'
 
-import SectionBuyOrExplore from './preview-page-sections/BuyOrExplore';
-import SectionHeader from './preview-page-sections/Header';
-import SectionIncludes from './preview-page-sections/Includes';
-import SectionMainPages from './preview-page-sections/MainPages';
-import SectionMid from './preview-page-sections/MidSection';
-import SectionUtilityPages from './preview-page-sections/UtilityPages';
 
-const page = () => {
+import { useEffect, useState } from "react";
+import { getProducts } from "@/lib/shopify";
+
+export default function Home() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const productData = await getProducts();
+      // console.log('Product Data : ' ,productData)
+      setProducts(productData);
+    }
+    fetchProducts();
+  }, []);
+
   return (
-    <div className="pt-20">
-      <div className="relative pb-24">
-        <SectionHeader />
-      </div>
-
-      <div className="bg-gray py-24">
-        <SectionIncludes />
-      </div>
-
-      <div className="py-24">
-        <SectionMid />
-      </div>
-
-      <div className="bg-gray py-24" id="pages">
-        <SectionMainPages />
-      </div>
-
-      <div className="py-24">
-        <SectionUtilityPages />
-      </div>
-
-      <div className="mb-24 bg-gray py-24">
-        <SectionBuyOrExplore />
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Shopify Products</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {products.map((product) => (
+          <div key={product.id} className="border p-4 rounded shadow-md">
+            <img src={product.images[0]?.edges[0]?.node.url} alt={product.title} className="w-full h-40 object-cover" />
+            <h2 className="text-lg font-semibold">{product.title}</h2>
+            <p>{product.description}</p>
+            <p className="font-bold">${product.variants[0]?.edges[0]?.node.price.amount}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default page;
+}
