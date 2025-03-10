@@ -1,5 +1,5 @@
 import type { StaticImageData } from 'next/image';
-import Image from 'next/image';
+// import Image from 'next/image';
 import type { FC } from 'react';
 import React from 'react';
 import { BsBag } from 'react-icons/bs';
@@ -11,7 +11,7 @@ import { PiSealCheckFill } from 'react-icons/pi';
 import ImageShowCase from '@/components/ImageShowCase';
 import ShoeSizeButton from '@/components/ShoeSizeButton';
 import { shoeSizes } from '@/data/content';
-import nike_profile from '@/images/nike_profile.jpg';
+// import nike_profile from '@/images/nike_profile.jpg';
 import ButtonCircle3 from '@/shared/Button/ButtonCircle3';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
@@ -35,7 +35,9 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
   rating,
   pieces_sold,
   reviews,
-}) => {
+}:any) => {
+
+  console.log('Product Data : ' ,shots , shoeName , prevPrice , currentPrice , rating , pieces_sold , reviews)
   return (
     <div className="items-stretch justify-between space-y-10 lg:flex lg:space-y-0">
       <div className="basis-[50%]">
@@ -53,8 +55,8 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
               className="overflow-hidden border border-neutral-400"
               size="w-11 h-11"
             >
-              <Image
-                src={nike_profile}
+              <img
+                src={'@/images/nike_profile.jpg'}
                 alt="nike_profile"
                 className="size-full object-cover"
               />
