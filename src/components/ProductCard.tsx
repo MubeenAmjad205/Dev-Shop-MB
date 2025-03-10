@@ -1,4 +1,4 @@
-import Image from 'next/image';
+// import Image from 'next/image';
 import Link from 'next/link';
 import type { FC } from 'react';
 import React from 'react';
@@ -17,7 +17,10 @@ const ProductCard: FC<ProductCardProps> = ({
   product,
   className,
   showPrevPrice = false,
-}) => {
+}:any) => {
+
+// console.log('Product Data : ' ,product) 
+
   return (
     <div
       className={`transitionEffect relative rounded-2xl p-3 shadow-md ${className}`}
@@ -31,18 +34,19 @@ const ProductCard: FC<ProductCardProps> = ({
         <LikeButton className="absolute right-2 top-2" />
         <Link
           className="h-[250px] w-full lg:h-[220px]"
-          href={`/products/${product.slug}`}
+          href={`/products/${product.handle}`}
         >
-          <Image
-            src={product.coverImage}
-            alt={`${product.shoeName} cover photo`}
+          <img
+            src={product.image}   
+            alt={`${product.title} cover photo`}
             className="size-full object-cover object-bottom"
+            // layout="fill"
           />
         </Link>
       </div>
       <div className="mt-3">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold">{product.shoeName}</h3>
+          <h3 className="font-semibold">{product.title}</h3>
           <p
             className={`text-neutral-500 ${
               showPrevPrice ? 'block' : 'hidden'
@@ -55,7 +59,7 @@ const ProductCard: FC<ProductCardProps> = ({
         <div className="flex items-center justify-between">
           <p className="text-sm text-neutral-500">{product.shoeCategory}</p>
           <p className="text-lg font-medium text-primary">
-            ${product.currentPrice}
+            ${product.price}
           </p>
         </div>
       </div>

@@ -21,7 +21,13 @@ export default bundleAnalyzer({
       },
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: 'images.pexels.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.shopify.com',
         port: '',
         pathname: '/**',
       },
