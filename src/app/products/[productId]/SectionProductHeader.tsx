@@ -1,5 +1,4 @@
 import type { StaticImageData } from 'next/image';
-// import Image from 'next/image';
 import type { FC } from 'react';
 import React from 'react';
 import { BsBag } from 'react-icons/bs';
@@ -11,14 +10,16 @@ import { PiSealCheckFill } from 'react-icons/pi';
 import ImageShowCase from '@/components/ImageShowCase';
 import ShoeSizeButton from '@/components/ShoeSizeButton';
 import { shoeSizes } from '@/data/content';
-// import nike_profile from '@/images/nike_profile.jpg';
 import ButtonCircle3 from '@/shared/Button/ButtonCircle3';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
 import Heading from '@/shared/Heading/Heading';
+import { addItem } from '@/store/slices/cartSlice';
+import { useAppDispatch } from '@/store/hooks';
 
 interface SectionProductHeaderProps {
   shots: StaticImageData[];
+  productData: any;
   shoeName: string;
   prevPrice: number;
   currentPrice: number;
@@ -29,15 +30,30 @@ interface SectionProductHeaderProps {
 
 const SectionProductHeader: FC<SectionProductHeaderProps> = ({
   shots,
+  productData,
   shoeName,
   prevPrice,
   currentPrice,
   rating,
   pieces_sold,
   reviews,
-}:any) => {
+}) => {
+  
+  
+  const dispatch = useAppDispatch();
+  
+  const handleAddToCart = () => {
+    // console.log('Mapped Product Data from the component : ', productData);
+    // Dispatch the addItem action with the full productData object and a quantity key.
+    dispatch(
+      addItem({
+        product: productData,
+        quantity: 1,
+      })
+    );
+    // console.log('Product added to cart:', productData);
+  };
 
-  console.log('Product Data : ' ,shots , shoeName , prevPrice , currentPrice , rating , pieces_sold , reviews)
   return (
     <div className="items-stretch justify-between space-y-10 lg:flex lg:space-y-0">
       <div className="basis-[50%]">
@@ -51,10 +67,7 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
 
         <div className="mb-10 flex items-center">
           <div className="flex items-center gap-1">
-            <ButtonCircle3
-              className="overflow-hidden border border-neutral-400"
-              size="w-11 h-11"
-            >
+            <ButtonCircle3 className="overflow-hidden border border-neutral-400" size="w-11 h-11">
               <img
                 src={'@/images/nike_profile.jpg'}
                 alt="nike_profile"
@@ -96,7 +109,10 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
 
         <div className="mt-5 flex items-center gap-5">
           <ButtonPrimary className="w-full">Buy Now</ButtonPrimary>
-          <ButtonSecondary className="flex w-full items-center gap-1 border-2 border-primary text-primary">
+          <ButtonSecondary
+            className="flex w-full items-center gap-1 border-2 border-primary text-primary"
+            onClick={handleAddToCart}
+          >
             <BsBag /> Add to cart
           </ButtonSecondary>
         </div>
