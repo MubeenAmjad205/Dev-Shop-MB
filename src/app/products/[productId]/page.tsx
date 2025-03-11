@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-
+import { Provider } from 'react-redux';
+import { store } from '@/store/store';
 import shopifyClient from '@/lib/shopifyClient';
 import { GET_PRODUCT_BY_HANDLE } from '@/queries/shopifyQueries';
 
@@ -12,7 +13,8 @@ import SectionProductInfo from './SectionProductInfo';
 
 type Props = {
   params: { productId: string };
-};
+}; 
+
 
 const SingleProductPage = (props: Props) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -45,33 +47,34 @@ const SingleProductPage = (props: Props) => {
     return <div>Product not found.</div>;
   }
 
-  // Map the Shopify product data to match your section component expectations.
+  // Map the Shopify product data to match component expectations.
   const productData = {
-    // Convert Shopify images to an array of image objects (if any)
+    id: selectedProduct.id,
     shots: selectedProduct.images?.edges?.map((edge: any) => edge.node) || [],
-    // Use the Shopify "title" as the shoe name
     shoeName: selectedProduct.title || '',
-    // Extract prices from Shopify's priceRange object
     currentPrice: selectedProduct.priceRange?.minVariantPrice?.amount || 0,
     prevPrice: selectedProduct.priceRange?.maxVariantPrice?.amount || 0,
-    // Shopify doesn't supply ratings, reviews, or pieces_sold; default them to 0
     rating: 0,
     pieces_sold: 0,
     reviews: 0,
-    // Use the description as the overview
     overview: selectedProduct.description || '',
-    // No shipment details from Shopify by default
     shipment_details: [],
   };
-  console.log('Product Data sdfghjk : ', productData);
-  
+
+  // Handler to dispatch the "addItem" action to Redux store.
+;
+
+  // console.log('Mapped Product Data: ', productData);
+
   return (
     <div className="container">
       <SectionNavigation />
 
       <div className="mb-20">
         <SectionProductHeader
+
           shots={productData.shots}
+          productData={productData}
           shoeName={productData.shoeName}
           prevPrice={productData.prevPrice}
           currentPrice={productData.currentPrice}
@@ -80,6 +83,8 @@ const SingleProductPage = (props: Props) => {
           reviews={productData.reviews}
         />
       </div>
+
+  
 
       <div className="mb-28">
         <SectionProductInfo
@@ -97,4 +102,12 @@ const SingleProductPage = (props: Props) => {
   );
 };
 
-export default SingleProductPage;
+const SingleProductPageWithRedux = (props: Props) => {
+  return (
+    <Provider store={store}>
+      <SingleProductPage {...props} />
+    </Provider>
+  );
+};
+
+export default SingleProductPageWithRedux;
