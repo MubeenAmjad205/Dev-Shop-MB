@@ -1,64 +1,76 @@
 'use client';
 
 import 'rc-slider/assets/index.css';
-
 import { pathOr } from 'ramda';
 import Slider from 'rc-slider';
-import React, { useState } from 'react';
-import { MdSearch } from 'react-icons/md';
+import React, { useState, useEffect } from 'react';
 
 import Heading from '@/shared/Heading/Heading';
-import Input from '@/shared/Input/Input';
 
-// DEMO DATA
-const brands = [
-  {
-    name: 'All',
-  },
-  {
-    name: 'Nike',
-  },
-  {
-    name: 'New Balance',
-  },
-  {
-    name: 'Rick Owens',
-  },
-];
+import { GET_COLLECTIONS } from '@/queries/shopifyQueries';
+import Shopifyclient from '@/lib/shopifyClient';
+import Loader from '@/shared/Loader/Loader';
 
-const gender = ['Men', 'Women', 'Unisex', 'Kids'];
-
-const locations = [
-  'New York',
-  'Canada',
-  'Bangladesh',
-  'Indonesia',
-  'San Francisco',
-];
 
 const PRICE_RANGE = [1, 500];
-//
-const SidebarFilters = () => {
+
+interface SidebarFiltersProps {
+  selectedCollection: string;
+  onSelectCollection: (collectionId: string) => void;
+}
+
+const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onSelectCollection }) => {
   const [rangePrices, setRangePrices] = useState([100, 500]);
-  const [activeBrand, setActiveBrand] = useState('All');
-  const [activeGender, setActiveGender] = useState('Men');
-  const [activeLocation, setActiveLocation] = useState('New York');
 
-  const renderTabsCategories = () => {
+  const [collections, setCollections] = useState<any[]>([]);
+  const [collectionsLoading, setCollectionsLoading] = useState(true);
+  const [collectionsError, setCollectionsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await Shopifyclient.query({ query: GET_COLLECTIONS });
+        const data = response.data;
+        const fetchedCollections = data.collections.edges.map((edge: any) => edge.node);
+        setCollections(fetchedCollections);
+      } catch (error) {
+        console.error("Error fetching collections:", error);
+        setCollectionsError("Error loading collections.");
+      } finally {
+        setCollectionsLoading(false);
+      }
+    };
+    fetchCollections();
+  }, []);
+
+  const renderCollections = () => {
+    if (collectionsLoading) return  <div className="flex justify-center items-center h-20"><Loader /></div>
+    if (collectionsError) return <div>{collectionsError}</div>;
+
     return (
-      <div className="relative flex flex-col space-y-4 pb-8">
-        <h3 className="mb-2.5 text-xl font-medium">Brands</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {brands.map((item) => (
+      <div className="mb-4">
+        <h3 className="mb-2 text-xl font-medium">Collections</h3>
+        <div className="flex flex-wrap gap-2">
+          <button
+            key="all-collections"
+            type="button"
+            onClick={() => onSelectCollection('All')}
+            className={`px-4 py-2  rounded whitespace-nowrap ${
+              selectedCollection === 'All' ? 'bg-primary text-white' : 'bg-gray'
+            }`}
+          >
+            All
+          </button>
+          {collections.map((collection: any) => (
             <button
-              key={item.name}
+              key={collection.id}
               type="button"
-              onClick={() => setActiveBrand(item.name)}
-              className={`rounded-lg py-4 ${
-                activeBrand === item.name ? 'bg-primary text-white' : 'bg-gray'
+              onClick={() => onSelectCollection(collection.id)}
+              className={`px-4 py-2  rounded whitespace-nowrap ${
+                selectedCollection === collection.id ? 'bg-primary text-white' : 'bg-gray'
               }`}
             >
-              {item.name}
+              {collection.title}
             </button>
           ))}
         </div>
@@ -66,33 +78,11 @@ const SidebarFilters = () => {
     );
   };
 
-  // OK
-  const renderTabsGender = () => {
-    return (
-      <div className="relative flex flex-col space-y-4 py-8">
-        <h3 className="mb-2.5 text-xl font-medium">Gender</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {gender.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setActiveGender(item)}
-              className={`rounded-lg py-4 ${
-                activeGender === item ? 'bg-primary text-white' : 'bg-gray'
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
-  // OK
+
   const renderTabsPriceRage = () => {
     return (
-      <div className="relative flex flex-col space-y-5 py-8 pr-3">
+      <div className="relative flex flex-col space-y-5 py-8 pr-3 mb-20">
         <div className="space-y-5">
           <span className="font-semibold">Price range</span>
           <Slider
@@ -105,12 +95,9 @@ const SidebarFilters = () => {
               pathOr(0, [1], rangePrices),
             ]}
             allowCross={false}
-            onChange={(_input: number | number[]) =>
-              setRangePrices(_input as number[])
-            }
+            onChange={(_input: number | number[]) => setRangePrices(_input as number[])}
           />
         </div>
-
         <div className="flex justify-between space-x-5">
           <div>
             <div className="block text-sm font-medium">Min price</div>
@@ -149,47 +136,44 @@ const SidebarFilters = () => {
     );
   };
 
-  // OK
-  const renderTabsLocation = () => {
-    return (
-      <div className="relative flex flex-col space-y-4 py-8">
-        <h3 className="mb-2.5 text-xl font-medium">Location</h3>
-        <div className="mb-2 flex items-center gap-2 space-y-3 rounded-full border border-neutral-300 px-4 md:flex md:space-y-0">
-          <MdSearch className="text-2xl text-neutral-500" />
-          <Input
-            type="password"
-            rounded="rounded-full"
-            placeholder="Search..."
-            sizeClass="h-12 px-0 py-3"
-            className="border-transparent bg-transparent placeholder:text-neutral-500 focus:border-transparent"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          {locations.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setActiveLocation(item)}
-              className={`rounded-lg py-4 ${
-                activeLocation === item ? 'bg-primary text-white' : 'bg-gray'
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  // const renderTabsLocation = () => {
+  //   return (
+  //     <div className="relative flex flex-col space-y-4 py-8">
+  //       <h3 className="mb-2.5 text-xl font-medium">Location</h3>
+  //       <div className="mb-2 flex items-center gap-2 space-y-3 rounded-full border border-neutral-300 px-4 md:flex md:space-y-0">
+  //         <MdSearch className="text-2xl text-neutral-500" />
+  //         <Input
+  //           type="password"
+  //           rounded="rounded-full"
+  //           placeholder="Search..."
+  //           sizeClass="h-12 px-0 py-3"
+  //           className="border-transparent bg-transparent placeholder:text-neutral-500 focus:border-transparent"
+  //         />
+  //       </div>
+  //       <div className="grid grid-cols-2 gap-4">
+  //         {locations.map((item) => (
+  //           <button
+  //             key={item}
+  //             type="button"
+  //             onClick={() => setActiveLocation(item)}
+  //             className={`rounded-lg py-4 ${
+  //               activeLocation === item ? 'bg-primary text-white' : 'bg-gray'
+  //             }`}
+  //           >
+  //             {item}
+  //           </button>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   return (
-    <div className="top-28 lg:sticky">
+    <div className="top-28 lg:sticky ">
       <Heading className="mb-0">Filter products</Heading>
-      <div className="divide-y divide-neutral-300">
-        {renderTabsCategories()}
-        {renderTabsGender()}
+      {renderCollections()}
+      <div className="divide-y divide-neutral-300 ">
         {renderTabsPriceRage()}
-        {renderTabsLocation()}
       </div>
     </div>
   );

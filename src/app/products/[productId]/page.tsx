@@ -13,8 +13,7 @@ import SectionProductInfo from './SectionProductInfo';
 
 type Props = {
   params: { productId: string };
-}; 
-
+};
 
 const SingleProductPage = (props: Props) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -59,12 +58,8 @@ const SingleProductPage = (props: Props) => {
     reviews: 0,
     overview: selectedProduct.description || '',
     shipment_details: [],
+    variantId: selectedProduct.variants?.edges?.[0]?.node?.id || null,
   };
-
-  // Handler to dispatch the "addItem" action to Redux store.
-;
-
-  // console.log('Mapped Product Data: ', productData);
 
   return (
     <div className="container">
@@ -72,7 +67,6 @@ const SingleProductPage = (props: Props) => {
 
       <div className="mb-20">
         <SectionProductHeader
-
           shots={productData.shots}
           productData={productData}
           shoeName={productData.shoeName}
@@ -83,8 +77,6 @@ const SingleProductPage = (props: Props) => {
           reviews={productData.reviews}
         />
       </div>
-
-  
 
       <div className="mb-28">
         <SectionProductInfo
