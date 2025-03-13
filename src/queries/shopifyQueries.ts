@@ -126,3 +126,20 @@ export const GET_PRODUCTS_BY_COLLECTION = gql`
     }
   }
 `;
+
+
+export const CREATE_CHECKOUT_MUTATION = gql`
+  mutation checkoutCreate($input: CheckoutCreateInput!) {
+    checkoutCreate(input: $input) {
+      checkout {
+        id
+        webUrl
+      }
+      checkoutUserErrors {
+        code
+        field
+        message
+      }
+    }
+  }
+`;

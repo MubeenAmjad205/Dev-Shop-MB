@@ -10,6 +10,7 @@ import SectionMoreProducts from './SectionMoreProducts';
 import SectionNavigation from './SectionNavigation';
 import SectionProductHeader from './SectionProductHeader';
 import SectionProductInfo from './SectionProductInfo';
+import ProductGuideSection from '@/components/ProductGuideSection';
 
 type Props = {
   params: { productId: string };
@@ -86,6 +87,9 @@ const SingleProductPage = (props: Props) => {
           reviews={productData.reviews}
         />
       </div>
+
+      {/* Render Contentful product guide using GraphQL */}
+      <ProductGuideSection productId={productData.id} />
 
       <div className="mb-28">
         <SectionMoreProducts />

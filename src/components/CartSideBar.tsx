@@ -23,7 +23,6 @@ import type { ProductType } from '@/data/types';
 export interface CartSideBarProps {}
 
 const CartSideBar: React.FC<CartSideBarProps> = () => {
-  // Use a mounted flag to avoid hydration mismatches.
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const dispatch = useAppDispatch();
@@ -33,10 +32,8 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
     setMounted(true);
   }, []);
 
-  // Render a hidden placeholder if not mounted to preserve hook order.
   if (!mounted) return <div style={{ visibility: 'hidden' }} />;
 
-  // Calculate total items and subtotal.
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
   const totalAmount = cartItems.reduce(
     (total, item) => total + Number(item.product.currentPrice) * item.quantity,
@@ -46,21 +43,20 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
   const handleOpenMenu = () => setIsVisible(true);
   const handleCloseMenu = () => setIsVisible(false);
 
-  // Render each product from the cart.
   const renderProduct = (cartItem: { product: ProductType; quantity: number }) => {
     const { product, quantity } = cartItem;
-    const { id, shoeName, shots, currentPrice, rating } = product;
-    const coverImage = shots && shots.length > 0 ? shots[0].url : '/fallback.jpg';
-    const altText = shots && shots.length > 0 ? shots[0].altText : shoeName;
-    const productSlug = id; // Using id as a fallback slug
+    const { id, productName, shots, currentPrice, rating } = product;
+    const coverImage = shots && shots.length > 0 ? shots[0]?.url : '/fallback.jpg';
+    const altText = shots && shots.length > 0 ? shots[0]?.altText : productName;
+    const productSlug = id;
 
     return (
       <div key={id} className="flex py-5 last:pb-0">
         <div className="relative size-24 shrink-0 overflow-hidden rounded-xl">
           <Image
             fill
-            src={coverImage}
-            alt={altText}
+            src={coverImage?coverImage:''}
+            alt={altText? altText:'Image'}
             className="size-full object-contain object-center"
           />
           <Link onClick={handleCloseMenu} className="absolute inset-0" href={`/products/${productSlug}`} />
@@ -71,7 +67,7 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
               <div>
                 <h3 className="font-medium">
                   <Link onClick={handleCloseMenu} href={`/products/${productSlug}`}>
-                    {shoeName}
+                    {productName}
                   </Link>
                 </h3>
                 <div className="flex items-center gap-1">
@@ -92,7 +88,6 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
               />
             </div>
             <div>
-              {/* Use InputNumber in controlled mode */}
               <InputNumber
                 value={quantity}
                 onChange={(newVal) => dispatch(updateQuantity({ id, quantity: newVal }))}

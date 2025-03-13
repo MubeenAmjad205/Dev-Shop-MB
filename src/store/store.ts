@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from './slices/cartSlice';
+import cartReducer, { CartState } from './slices/cartSlice';
 
 const loadState = () => {
   try {
@@ -18,7 +18,6 @@ const saveState = (state: any) => {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('cartState', serializedState);
   } catch (err) {
-    // ignore write errors
   }
 };
 
@@ -39,3 +38,6 @@ store.subscribe(() => {
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+// Re-export CartState so that it can be named.
+export type { CartState };

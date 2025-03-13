@@ -1,5 +1,5 @@
 {
-  "name": "next-js-boilerplate",
+  "name": "dev-shop-mb",
   "version": "3.22.0",
   "scripts": {
     "dev": "next dev",
@@ -149,5 +149,5 @@
       "@semantic-release/github"
     ]
   },
-  "author": "Ixartz (https://github.com/ixartz)"
+  "author": "Mubeen Amjad (https://github.com/MubeenAmjad205)"
 }

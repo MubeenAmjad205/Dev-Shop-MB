@@ -1,3 +1,5 @@
+'use client';
+
 import type { StaticImageData } from 'next/image';
 import type { FC } from 'react';
 import React from 'react';
@@ -6,7 +8,6 @@ import { GoDotFill } from 'react-icons/go';
 import { LuInfo } from 'react-icons/lu';
 import { MdStar } from 'react-icons/md';
 import { PiSealCheckFill } from 'react-icons/pi';
-
 import ImageShowCase from '@/components/ImageShowCase';
 import ShoeSizeButton from '@/components/ShoeSizeButton';
 import { shoeSizes } from '@/data/content';
@@ -16,6 +17,9 @@ import ButtonSecondary from '@/shared/Button/ButtonSecondary';
 import Heading from '@/shared/Heading/Heading';
 import { addItem } from '@/store/slices/cartSlice';
 import { useAppDispatch } from '@/store/hooks';
+import {  useMutation } from '@apollo/client';
+import shopifyClient from '@/lib/shopifyClient';
+import {CREATE_CHECKOUT_MUTATION} from'@/queries/shopifyQueries';
 
 interface SectionProductHeaderProps {
   shots: StaticImageData[];
@@ -28,6 +32,8 @@ interface SectionProductHeaderProps {
   reviews: number;
 }
 
+
+
 const SectionProductHeader: FC<SectionProductHeaderProps> = ({
   shots,
   productData,
@@ -38,20 +44,44 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
   pieces_sold,
   reviews,
 }) => {
-  
-  
   const dispatch = useAppDispatch();
-  
+
+  const [checkoutCreate] = useMutation(CREATE_CHECKOUT_MUTATION, {
+    client: shopifyClient,
+  });
+
   const handleAddToCart = () => {
-    // console.log('Mapped Product Data from the component : ', productData);
-    // Dispatch the addItem action with the full productData object and a quantity key.
     dispatch(
       addItem({
         product: productData,
         quantity: 1,
       })
     );
-    // console.log('Product added to cart:', productData);
+  };
+
+  const handleBuyNow = async () => {
+    if (!productData.variantId) {
+      console.error('Variant ID is missing.');
+      return;
+    }
+    try {
+      const input = {
+        lineItems: [
+          {
+            variantId: productData.variantId,
+            quantity: 1,
+          },
+        ],
+      };
+      const { data } = await checkoutCreate({ variables: { input } });
+      if (data.checkoutCreate.checkout) {
+        window.location.href = data.checkoutCreate.checkout.webUrl;
+      } else {
+        console.error('Checkout errors:', data.checkoutCreate.checkoutUserErrors);
+      }
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+    }
   };
 
   return (
@@ -108,7 +138,9 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
         </div>
 
         <div className="mt-5 flex items-center gap-5">
-          <ButtonPrimary className="w-full">Buy Now</ButtonPrimary>
+          <ButtonPrimary onClick={handleBuyNow} className="w-full">
+            Buy Now
+          </ButtonPrimary>
           <ButtonSecondary
             className="flex w-full items-center gap-1 border-2 border-primary text-primary"
             onClick={handleAddToCart}

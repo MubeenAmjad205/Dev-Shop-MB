@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Loader = () => {
+const DotLoader = () => {
   return (
     <div className="flex h-screen items-center justify-center bg-white">
       <div className="loader">
@@ -13,4 +13,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default DotLoader;

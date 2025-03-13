@@ -5,14 +5,9 @@ import Link from 'next/link';
 import React from 'react';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { MdStar } from 'react-icons/md';
-import { TbBrandPaypal } from 'react-icons/tb';
-
 import LikeButton from '@/components/LikeButton';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
-import ButtonSecondary from '@/shared/Button/ButtonSecondary';
-// import Input from '@/shared/Input/Input';
 import InputNumber from '@/shared/InputNumber/InputNumber';
-
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -23,28 +18,25 @@ const CartPageContent = () => {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
 
-  // Calculate dynamic totals.
   const subtotal = cartItems.reduce(
     (acc, item) => acc + Number(item.product.currentPrice) * item.quantity,
     0
   );
-  // No estimated taxes; total equals subtotal.
   const total = subtotal;
 
-  // Render each product in the cart.
   const renderProduct = (cartItem: { product: ProductType; quantity: number }) => {
     const { product, quantity } = cartItem;
-    const { id, shoeName, shots, currentPrice, slug, rating, shoeCategory } = product;
-    const coverImage = shots && shots.length > 0 ? shots[0].url : '/fallback.jpg';
-    const altText = shots && shots.length > 0 ? shots[0].altText : shoeName;
+    const { id, productName, shots, currentPrice, slug, rating, shoeCategory } = product;
+    const coverImage = shots && shots?.length > 0 ? shots[0]?.url : '/fallback.jpg';
+    const altText = shots && shots?.length > 0 ? shots[0]?.altText : productName;
     const productSlug = slug || id;
 
     return (
       <div key={id} className="flex py-5 last:pb-0">
         <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-xl md:w-40 md:h-40">
           <Image
-            src={coverImage}
-            alt={altText}
+            src={coverImage?coverImage:''}
+            alt={altText? altText:'Image'}
             layout="fill"
             objectFit="contain"
             className="object-contain object-center"
@@ -57,7 +49,7 @@ const CartPageContent = () => {
               <div key={`title-${id}`}>
                 <h3 className="font-medium md:text-2xl">
                   <Link href={`/products/${productSlug}`} key={`link-title-${id}`}>
-                    {shoeName}
+                    {productName}
                   </Link>
                 </h3>
                 {shoeCategory && (
@@ -134,14 +126,6 @@ const CartPageContent = () => {
               <ButtonPrimary href="/checkout" className="mt-8 w-full" key="checkout">
                 Checkout Now
               </ButtonPrimary>
-              <ButtonSecondary
-                className="mt-3 inline-flex w-full items-center gap-1 border-2 border-primary text-primary"
-                href="/checkout"
-                key="paypal"
-              >
-                <TbBrandPaypal className="text-2xl" />
-                PayPal
-              </ButtonSecondary>
             </div>
           </div>
         </div>

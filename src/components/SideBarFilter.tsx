@@ -1,27 +1,30 @@
 'use client';
 
 import 'rc-slider/assets/index.css';
-import { pathOr } from 'ramda';
 import Slider from 'rc-slider';
 import React, { useState, useEffect } from 'react';
 
 import Heading from '@/shared/Heading/Heading';
+import DotLoader from '@/shared/DotLoader/DotLoader';
 
 import { GET_COLLECTIONS } from '@/queries/shopifyQueries';
 import Shopifyclient from '@/lib/shopifyClient';
-import Loader from '@/shared/Loader/Loader';
 
 
-const PRICE_RANGE = [1, 500];
 
-interface SidebarFiltersProps {
+const SidebarFilters: React.FC<{
   selectedCollection: string;
   onSelectCollection: (collectionId: string) => void;
-}
-
-const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onSelectCollection }) => {
-  const [rangePrices, setRangePrices] = useState([100, 500]);
-
+  priceRange: number[];
+  onPriceRangeChange: (range: [number, number]) => void;
+  dynamicPriceRange: number[];
+}> = ({
+  selectedCollection,
+  onSelectCollection,
+  priceRange,
+  onPriceRangeChange,
+  dynamicPriceRange,
+}) => {
   const [collections, setCollections] = useState<any[]>([]);
   const [collectionsLoading, setCollectionsLoading] = useState(true);
   const [collectionsError, setCollectionsError] = useState<string | null>(null);
@@ -44,7 +47,8 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
   }, []);
 
   const renderCollections = () => {
-    if (collectionsLoading) return  <div className="flex justify-center items-center h-20"><Loader /></div>
+    if (collectionsLoading)
+      return <div className="flex justify-center items-center h-20"><DotLoader /></div>;
     if (collectionsError) return <div>{collectionsError}</div>;
 
     return (
@@ -55,7 +59,7 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
             key="all-collections"
             type="button"
             onClick={() => onSelectCollection('All')}
-            className={`px-4 py-2  rounded whitespace-nowrap ${
+            className={`px-4 py-2 rounded whitespace-nowrap ${
               selectedCollection === 'All' ? 'bg-primary text-white' : 'bg-gray'
             }`}
           >
@@ -66,7 +70,7 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
               key={collection.id}
               type="button"
               onClick={() => onSelectCollection(collection.id)}
-              className={`px-4 py-2  rounded whitespace-nowrap ${
+              className={`px-4 py-2 rounded whitespace-nowrap ${
                 selectedCollection === collection.id ? 'bg-primary text-white' : 'bg-gray'
               }`}
             >
@@ -78,8 +82,6 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
     );
   };
 
-
-
   const renderTabsPriceRage = () => {
     return (
       <div className="relative flex flex-col space-y-5 py-8 pr-3 mb-20">
@@ -87,15 +89,16 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
           <span className="font-semibold">Price range</span>
           <Slider
             range
-            min={PRICE_RANGE[0]}
-            max={PRICE_RANGE[1]}
+            min={dynamicPriceRange[0]}
+            max={dynamicPriceRange[1]}
             step={1}
-            defaultValue={[
-              pathOr(0, [0], rangePrices),
-              pathOr(0, [1], rangePrices),
-            ]}
+            value={priceRange}
             allowCross={false}
-            onChange={(_input: number | number[]) => setRangePrices(_input as number[])}
+            onChange={(newRange: number | number[]) => {
+              if (Array.isArray(newRange) && newRange.length === 2) {
+                onPriceRangeChange(newRange as [number, number]);
+              }
+            }}
           />
         </div>
         <div className="flex justify-between space-x-5">
@@ -111,7 +114,7 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
                 disabled
                 id="minPrice"
                 className="block w-32 rounded-full border-neutral-300 bg-transparent pl-4 pr-10 sm:text-sm"
-                value={rangePrices[0]}
+                value={priceRange[0]}
               />
             </div>
           </div>
@@ -127,7 +130,7 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
                 name="maxPrice"
                 id="maxPrice"
                 className="block w-32 rounded-full border-neutral-300 bg-transparent pl-4 pr-10 sm:text-sm"
-                value={rangePrices[1]}
+                value={priceRange[1]}
               />
             </div>
           </div>
@@ -136,37 +139,7 @@ const SidebarFilters: React.FC<SidebarFiltersProps> = ({ selectedCollection, onS
     );
   };
 
-  // const renderTabsLocation = () => {
-  //   return (
-  //     <div className="relative flex flex-col space-y-4 py-8">
-  //       <h3 className="mb-2.5 text-xl font-medium">Location</h3>
-  //       <div className="mb-2 flex items-center gap-2 space-y-3 rounded-full border border-neutral-300 px-4 md:flex md:space-y-0">
-  //         <MdSearch className="text-2xl text-neutral-500" />
-  //         <Input
-  //           type="password"
-  //           rounded="rounded-full"
-  //           placeholder="Search..."
-  //           sizeClass="h-12 px-0 py-3"
-  //           className="border-transparent bg-transparent placeholder:text-neutral-500 focus:border-transparent"
-  //         />
-  //       </div>
-  //       <div className="grid grid-cols-2 gap-4">
-  //         {locations.map((item) => (
-  //           <button
-  //             key={item}
-  //             type="button"
-  //             onClick={() => setActiveLocation(item)}
-  //             className={`rounded-lg py-4 ${
-  //               activeLocation === item ? 'bg-primary text-white' : 'bg-gray'
-  //             }`}
-  //           >
-  //             {item}
-  //           </button>
-  //         ))}
-  //       </div>
-  //     </div>
-  //   );
-  // };
+  
 
   return (
     <div className="top-28 lg:sticky ">
