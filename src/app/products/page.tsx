@@ -9,14 +9,14 @@ import SectionBrands from '../home/SectionBrands';
 import { getProducts } from '@/lib/shopify';
 import Shopifyclient from '@/lib/shopifyClient';
 import { GET_PRODUCTS_BY_COLLECTION } from '@/queries/shopifyQueries';
-import Loader from '@/shared/Loader/loader';
 
-// Helper function to fetch products by collection
+// Helper function to fetch products by collection using Shopifyclient.query
 const getProductsByCollection = async (collectionId: string) => {
   const response = await Shopifyclient.query({
     query: GET_PRODUCTS_BY_COLLECTION,
     variables: { collectionId },
   });
+  // Return an array of product nodes
   return response.data.collection.products.edges.map((edge: any) => edge.node);
 };
 
@@ -24,8 +24,12 @@ const ProductsPageContent = () => {
   const [selectedCollection, setSelectedCollection] = useState('All');
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // New states for dynamic price range filtering
+  const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 0]);
+  const [dynamicPriceRange, setDynamicPriceRange] = useState<[number, number]>([0, 1000]);
 
-  // Fetch products based on selected collection
+  // Fetch products based on the selected collection and update price range accordingly.
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -36,15 +40,40 @@ const ProductsPageContent = () => {
         } else {
           rawProducts = await getProductsByCollection(selectedCollection);
         }
+        // Map raw Shopify data to the shape expected by ProductCard.
+        // Here we make sure to include id, handle, and title.
         const mappedProducts = rawProducts.map((product: any) => ({
           id: product.id,
           handle: product.handle,
           title: product.title,
+          slug: product.handle, // assuming slug is same as handle
+          shoeName: product.title, // you can alias title as shoeName
           description: product.description,
           image: product.images?.edges[0]?.node.url,
-          price: product.variants?.edges[0]?.node.price.amount,
+          price: Number(product.variants?.edges[0]?.node.price.amount),
+          // If you need variantId for checkout, you might add:
+          variantId: product.variants?.edges[0]?.node?.id || null,
+          // Optionally, add other fields as required by ProductCard
         }));
-        setProducts(mappedProducts);
+        
+        // Update dynamic price range based on fetched products
+        if (mappedProducts.length > 0) {
+          const prices = mappedProducts.map((p: any) => p.price);
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
+          setDynamicPriceRange([minPrice, maxPrice]);
+          // If initial selected price range is not set, initialize it.
+          if (selectedPriceRange[0] === 0 && selectedPriceRange[1] === 0) {
+            setSelectedPriceRange([minPrice, maxPrice]);
+          }
+        }
+        
+        // Filter products based on the selected price range.
+        const filteredProducts = mappedProducts.filter(
+          (product: any) =>
+            product.price >= selectedPriceRange[0] && product.price <= selectedPriceRange[1]
+        );
+        setProducts(filteredProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -52,7 +81,7 @@ const ProductsPageContent = () => {
       }
     };
     fetchProducts();
-  }, [selectedCollection]);
+  }, [selectedCollection, selectedPriceRange]);
 
   return (
     <div className="">
@@ -61,6 +90,9 @@ const ProductsPageContent = () => {
           <SidebarFilters
             selectedCollection={selectedCollection}
             onSelectCollection={setSelectedCollection}
+            priceRange={selectedPriceRange}
+            onPriceRangeChange={(range) => setSelectedPriceRange(range)}
+            dynamicPriceRange={dynamicPriceRange}
           />
         </div>
         <div className="mb-10 shrink-0 border-t lg:mx-4 lg:mb-0 lg:border-t-0" />
@@ -76,9 +108,7 @@ const ProductsPageContent = () => {
             </div>
           </div>
           {loading ? (
-            <div className="flex justify-center items-start h-full">
-              <Loader />
-            </div>
+            <div>Loading products...</div>
           ) : (
             <div className="grid flex-1 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
               {products.map((product: any) => (

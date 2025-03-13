@@ -2,41 +2,20 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState, 
-  // Fragment 
-} from 'react';
+import React, { useEffect, useState, } from 'react';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { MdStar } from 'react-icons/md';
-import { TbBrandPaypal } from 'react-icons/tb';
-import { gql, useMutation } from '@apollo/client';
-
+import { useMutation } from '@apollo/client';
 import LikeButton from '@/components/LikeButton';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
-import ButtonSecondary from '@/shared/Button/ButtonSecondary';
 import InputNumber from '@/shared/InputNumber/InputNumber';
-
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { removeItem, updateQuantity } from '@/store/slices/cartSlice';
 import type { ProductType } from '@/data/types';
 import shopifyClient from '@/lib/shopifyClient';
-
-const CREATE_CHECKOUT_MUTATION = gql`
-  mutation checkoutCreate($input: CheckoutCreateInput!) {
-    checkoutCreate(input: $input) {
-      checkout {
-        id
-        webUrl
-      }
-      checkoutUserErrors {
-        code
-        field
-        message
-      }
-    }
-  }
-`;
+import {CREATE_CHECKOUT_MUTATION} from '@/queries/shopifyQueries'
 
 const CheckoutPageContent = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -62,12 +41,18 @@ const CheckoutPageContent = () => {
   const handleCheckout = async () => {
     // Map each cart item to Shopify's line item format.
     // IMPORTANT: Ensure each product has a valid variantId.
-    const lineItems = cartItems.map((item) => ({
-      variantId: item.product.variantId,
+    if (cartItems.length === 0) {
+      alert('Your cart is empty!');
+
+    }else{
+
+      
+      const lineItems = cartItems.map((item) => ({
+        variantId: item.product.variantId,
       quantity: item.quantity,
     }));
     const input = { lineItems };
-
+    
     try {
       const { data } = await checkoutCreate({ variables: { input } });
       if (data.checkoutCreate.checkout) {
@@ -78,15 +63,16 @@ const CheckoutPageContent = () => {
     } catch (error) {
       console.error('Error during checkout:', error);
     }
+  }; 
   };
 
   const renderProduct = (cartItem: { product: ProductType; quantity: number }) => {
     const { product, quantity } = cartItem;
-    const { id, shoeName, shots, currentPrice, slug, rating, shoeCategory } = product;
+    const { id, productName, shots, currentPrice, slug, rating, shoeCategory } = product;
     const coverImage = shots?.[0]?.url || '/fallback.jpg';
-    const altText = shots?.[0]?.altText || shoeName;
+    const altText = shots?.[0]?.altText || productName;
     const productSlug = slug || id;
-
+    
     return (
       <div key={id} className="flex py-5 last:pb-0">
         <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-xl md:w-40 md:h-40">
@@ -109,7 +95,7 @@ const CheckoutPageContent = () => {
               <div key={`title-${id}`}>
                 <h3 className="font-medium md:text-2xl">
                   <Link href={`/products/${productSlug}`} key={`link-title-${id}`}>
-                    {shoeName}
+                    {productName}
                   </Link>
                 </h3>
                 {shoeCategory && (
@@ -194,7 +180,7 @@ const CheckoutPageContent = () => {
               {checkoutLoading ? 'Processing...' : 'Confirm Order'}
             </ButtonPrimary>
           </div>
-          <div className="mt-3" key="paypal">
+          {/* <div className="mt-3" key="paypal">
             <ButtonSecondary
               className="inline-flex w-full items-center gap-1 border-2 border-primary text-primary"
               href="/checkout"
@@ -202,7 +188,7 @@ const CheckoutPageContent = () => {
               <TbBrandPaypal className="text-2xl" />
               PayPal
             </ButtonSecondary>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>

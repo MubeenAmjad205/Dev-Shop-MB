@@ -1,16 +1,25 @@
 import type { StaticImageData } from 'next/image';
 
 export type ProductType = {
-  slug: string;
-  shoeName: string;
-  shoeCategory: string;
-  coverImage: StaticImageData | string;
+  id: string;
+  slug: string; 
+  handle: string;
+  title: string;
+  productName: string; // Alias for title, as used in your mapping
+  description?: string;
+  shots: {
+    url: string|StaticImageData;
+    altText?: string;
+  }[];
   currentPrice: number;
-  previousPrice: number;
-  rating: number;
-  pieces_sold: number;
-  justIn: boolean;
+  previousPrice?: number;
+  variantId?: string;
+  shoeCategory?: string;
+  rating?: number;
+  pieces_sold?: number;
+  justIn?: boolean;
 };
+
 
 export type BlogData = {
   sectionOne: {
