@@ -15,23 +15,22 @@ export const GET_PRODUCT_GUIDE = gql`
   }
 `;
 
-
-export const GET_FOOTER_DATA = gql`
-  query GetFooterData {
-    footerCollection(limit: 1) {
+export const GET_FOOTER_DESCRIPTION = gql`
+  query GetFooterDescription {
+    footerDescriptionCollection(limit: 1) {
       items {
         description
-        footerLinks {
-          title
-          links {
-            name
-            href
-          }
-        }
-        socialMediaLinks {
-          platform
-          href
-        }
+      }
+    }
+  }
+`;
+
+export const GET_FOOTER_LINKS = gql`
+  query GetFooterLinks {
+    footerLinksCollection {
+      items {
+        link
+        url
       }
     }
   }

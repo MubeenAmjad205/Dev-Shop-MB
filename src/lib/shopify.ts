@@ -14,39 +14,48 @@ export { client, gql };
 
 
 
-export const getProducts = async () => {
-    const GET_PRODUCTS_QUERY = gql`
-      query getProducts {
-        products(first: 10) {
-          edges {
-            node {
-              id
-              title
-              handle
-              description
-              images(first: 1) {
-                edges {
-                  node {
-                    url
-                  }
+export const getProducts = async (first: number = 10, after?: string) => {
+  const GET_PRODUCTS_QUERY = gql`
+    query getProducts($first: Int!, $after: String) {
+      products(first: $first, after: $after) {
+        edges {
+          cursor
+          node {
+            id
+            title
+            handle
+            description
+            images(first: 1) {
+              edges {
+                node {
+                  url
                 }
               }
-              variants(first: 1) {
-                edges {
-                  node {
-                    price {
-                      amount
-                    }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  price {
+                    amount
                   }
                 }
               }
             }
           }
         }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
       }
-    `;
-  
-    const { data } = await client.query({ query: GET_PRODUCTS_QUERY });
-    return data.products.edges.map(({ node }: any) => node);
-  };
+    }
+  `;
+
+  const { data } = await client.query({
+    query: GET_PRODUCTS_QUERY,
+    variables: { first, after },
+  });
+  // Return the products object containing edges and pageInfo.
+  return data.products;
+};
   
