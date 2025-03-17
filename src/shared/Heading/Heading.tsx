@@ -10,6 +10,7 @@ export interface HeadingProps extends NextPrevProps {
   title?: ReactNode;
   hasNextPrev?: boolean;
   isCenter?: boolean;
+  // ru
   isMain?: boolean;
   children?: ReactNode;
 }
@@ -25,6 +26,8 @@ const Heading: React.FC<HeadingProps> = ({
   ...args
 }) => {
   return (
+
+    
     <div
       className={`nc-Section-Heading relative flex flex-col justify-between sm:flex-row sm:items-end ${className}`}
     >

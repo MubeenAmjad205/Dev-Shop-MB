@@ -35,3 +35,27 @@ export const GET_FOOTER_LINKS = gql`
     }
   }
 `;
+
+
+
+export const GET_FAQ_PAGE = gql`
+  query GetFAQPage {
+    faqPageCollection(limit: 1) {
+      items {
+        heading
+        description
+        faqCategoriesCollection {
+          items {
+            category
+            faqsCollection {
+              items {
+                question
+                answer
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
