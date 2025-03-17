@@ -8,13 +8,20 @@ import { getProducts } from '@/lib/shopify';
 import Shopifyclient from '@/lib/shopifyClient';
 import { GET_PRODUCTS_BY_COLLECTION } from '@/queries/shopifyQueries';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
+import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 
-const getProductsByCollection = async (collectionId: string, first: number, after?: string) => {
+const getProductsByCollection = async (
+  collectionId: string,
+  first: number,
+  after?: string
+) => {
   const response = await Shopifyclient.query({
     query: GET_PRODUCTS_BY_COLLECTION,
     variables: { collectionId, first, after },
   });
-  // Return an object with edges and pageInfo
+  if (!response.data.collection) {
+    return { edges: [], pageInfo: { hasNextPage: false, endCursor: null } };
+  }
   return response.data.collection.products;
 };
 
@@ -41,6 +48,14 @@ const ProductsPageContent = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  // Reset pagination when collection or search query changes.
+  useEffect(() => {
+    setCurrentCursor(undefined);
+    setCursorStack([]);
+    setCurrentPage(1);
+  }, [selectedCollection, searchQuery]);
+
+  // Fetch products whenever filters or currentCursor change.
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -51,7 +66,8 @@ const ProductsPageContent = () => {
         } else {
           response = await getProductsByCollection(selectedCollection, itemsPerPage, currentCursor);
         }
-        // response contains edges and pageInfo
+        const safePageInfo = response.pageInfo || { hasNextPage: false, endCursor: null };
+
         const mappedProducts = response.edges.map((edge: any) => ({
           id: edge.node.id,
           handle: edge.node.handle,
@@ -63,7 +79,8 @@ const ProductsPageContent = () => {
           price: Number(edge.node.variants?.edges[0]?.node.price.amount),
           variantId: edge.node.variants?.edges[0]?.node.id || null,
         }));
-        // Update dynamic price range if needed
+
+        // Update dynamic price range if products are returned.
         if (mappedProducts.length > 0) {
           const prices = mappedProducts.map((p: any) => p.price);
           const minPrice = Math.min(...prices);
@@ -73,22 +90,20 @@ const ProductsPageContent = () => {
             setSelectedPriceRange([minPrice, maxPrice]);
           }
         }
-        // Filter products by price range
+        // Filter products by price range.
         let filteredProducts = mappedProducts.filter(
           (product: any) =>
             product.price >= selectedPriceRange[0] &&
             product.price <= selectedPriceRange[1]
         );
-        // Additionally filter by the search query
+        // Additionally filter by the search query.
         if (searchQuery) {
           filteredProducts = filteredProducts.filter((product: any) =>
             product.title.toLowerCase().includes(searchQuery.toLowerCase())
           );
         }
         setProducts(filteredProducts);
-        setPageInfo(response.pageInfo);
-        // Reset page to 1 when new data is fetched
-        setCurrentPage(1);
+        setPageInfo(safePageInfo);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -98,9 +113,9 @@ const ProductsPageContent = () => {
     fetchProducts();
   }, [selectedCollection, selectedPriceRange, searchQuery, currentCursor]);
 
-  // Handlers for pagination buttons
+  // Handlers for pagination buttons.
   const handleNextPage = () => {
-    if (pageInfo.hasNextPage && pageInfo.endCursor) {
+    if (pageInfo?.hasNextPage && pageInfo.endCursor) {
       setCursorStack([...cursorStack, currentCursor]);
       setCurrentCursor(pageInfo.endCursor);
       setCurrentPage(currentPage + 1);
@@ -108,9 +123,9 @@ const ProductsPageContent = () => {
   };
 
   const handlePreviousPage = () => {
-    if (cursorStack.length > 0) {
+    if (currentPage > 1) {
       const newStack = [...cursorStack];
-      const prevCursor = newStack.pop();
+      const prevCursor = newStack.pop() || undefined;
       setCursorStack(newStack);
       setCurrentCursor(prevCursor);
       setCurrentPage(currentPage - 1);
@@ -139,14 +154,22 @@ const ProductsPageContent = () => {
                 <ProductCard product={product} key={product.id} />
               ))}
             </div>
-            <div className="mt-8 flex justify-center space-x-2">
-              <ButtonSecondary onClick={handlePreviousPage} disabled={currentPage === 1}>
+            <div className="my-8 flex items-center justify-center space-x-4">
+              <ButtonSecondary
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`px-6 py-2 rounded-full shadow-md ${currentPage <= 1? 'opacity-50 cursor-not-allowed' : null}`}
+              >
                 Previous
               </ButtonSecondary>
-              <span className="px-3 py-1 border rounded-md bg-gray-200 text-gray-700">
-                Page {currentPage}
-              </span>
-              <ButtonSecondary onClick={handleNextPage} disabled={!pageInfo.hasNextPage}>
+              <ButtonPrimary disabled className="px-6 py-2 rounded-full shadow-md">
+                {currentPage}
+              </ButtonPrimary>
+              <ButtonSecondary
+                onClick={handleNextPage}
+                disabled={!pageInfo?.hasNextPage}
+                className={`px-6 py-2 rounded-full shadow-md ${!pageInfo?.hasNextPage ? 'opacity-50 cursor-not-allowed' : null}`}
+              >
                 Next
               </ButtonSecondary>
             </div>
