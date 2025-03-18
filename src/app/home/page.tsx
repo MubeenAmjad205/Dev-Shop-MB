@@ -5,7 +5,7 @@ import SectionBrands from './SectionBrands';
 import SectionHeader from './SectionHeader';
 import SectionProducts from './SectionProducts';
 
-const page = () => {
+const Home = () => {
   return (
     <div>
       <div className="my-7">
@@ -27,4 +27,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Home;

@@ -1,23 +1,15 @@
 'use client';
 
 import React from 'react';
-import { gql, useQuery } from '@apollo/client';
+import {  useQuery } from '@apollo/client';
 import { contentfulClient } from '@/lib/contentfulGraphQL';
 import Heading from '@/shared/Heading/Heading';
 import SectionBlogs from './SectionBlogs';
-import SectionBlogsHero from './SectionBlogsHero';
+import { GET_BLOG_HEADING } from '@/queries/contentfulQueries';
+// import SectionBlogsHero from './SectionBlogsHero';
 import Loading from '../loading';
 
-export const GET_BLOG_HEADING = gql`
-  query GetBlogHeading {
-    blogHeadingCollection(limit: 1) {
-      items {
-        title
-        description
-      }
-    }
-  }
-`;
+
 
 const Page = () => {
   const { data, loading, error } = useQuery(GET_BLOG_HEADING, {
@@ -41,9 +33,9 @@ const Page = () => {
         {title}
       </Heading>
 
-      <div className="pb-24">
+      {/* <div className="pb-24">
         <SectionBlogsHero />
-      </div>
+      </div> */}
 
       <div className="py-24">
         <SectionBlogs />

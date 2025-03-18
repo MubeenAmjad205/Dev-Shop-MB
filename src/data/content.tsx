@@ -44,7 +44,7 @@ export const topNavLinks: NavItemType[] = [
   {
     id: 'ee46t',
     name: 'Home',
-    href: '/home',
+    href: '/products',
   },
   {
     id: 'ee46t',
@@ -61,11 +61,7 @@ export const topNavLinks: NavItemType[] = [
     name: 'Collections',
     href: '/products',
   },
-  {
-    id: 'h6ii8g',
-    name: 'Contact',
-    href: '/contact',
-  },
+ 
   {
     id: 'h678ty',
     name: 'FAQ',
@@ -87,7 +83,7 @@ export const NavLinks: NavItemType[] = [
   {
     id: 'ee46t',
     name: 'Home',
-    href: '/home',
+    href: '/products',
   },
   {
     id: 'eerrrt',
@@ -100,11 +96,7 @@ export const NavLinks: NavItemType[] = [
     href: '/products',
   },
 
-  {
-    id: 'h6ii8g',
-    name: 'Contact',
-    href: '/contact',
-  },
+ 
   {
     id: 'h678ty',
     name: 'FAQ',
