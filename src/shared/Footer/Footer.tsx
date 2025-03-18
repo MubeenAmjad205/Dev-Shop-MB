@@ -7,6 +7,7 @@ import { GET_FOOTER_DESCRIPTION, GET_FOOTER_LINKS } from '@/queries/contentfulQu
 import Logo from '../Logo/Logo';
 import FooterBanner from './FooterBanner';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import Loading from '@/app/loading';
 
 const Footer: React.FC = () => {
   const [footerDescription, setFooterDescription] = useState<string>('Loading...');
@@ -65,7 +66,7 @@ const Footer: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading footer...</div>;
+    return <div><Loading/></div>;
   }
 
   if (error) {

@@ -38,6 +38,17 @@ export const GET_FOOTER_LINKS = gql`
 
 
 
+export const GET_BLOG_HEADING = gql`
+  query GetBlogHeading {
+    blogHeadingCollection(limit: 1) {
+      items {
+        title
+        description
+      }
+    }
+  }
+`;
+
 export const GET_FAQ_PAGE = gql`
   query GetFAQPage {
     faqPageCollection(limit: 1) {
@@ -47,7 +58,7 @@ export const GET_FAQ_PAGE = gql`
         faqCategoriesCollection {
           items {
             category
-            faqsCollection {
+            faQsCollection {
               items {
                 question
                 answer

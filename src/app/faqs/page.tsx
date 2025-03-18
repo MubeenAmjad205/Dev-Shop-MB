@@ -2,33 +2,14 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { contentfulClient } from '@/lib/contentfulGraphQL';
+import { GET_FAQ_PAGE } from '@/queries/contentfulQueries';
 import Heading from '@/shared/Heading/Heading';
 import FAQtab from './FAQtab';
 import Loading from '../loading';
 
-export const GET_FAQ_PAGE = gql`
-  query GetFAQPage {
-    faqPageCollection(limit: 1) {
-      items {
-        heading
-        description
-        faqCategoriesCollection {
-          items {
-            category
-            faQsCollection {
-              items {
-                question
-                answer
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+
 
 const FAQPage = () => {
   const { data, loading, error } = useQuery(GET_FAQ_PAGE, {
