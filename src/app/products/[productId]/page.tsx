@@ -6,11 +6,9 @@ import { store } from '@/store/store';
 import shopifyClient from '@/lib/shopifyClient';
 import { GET_PRODUCT_BY_HANDLE } from '@/queries/shopifyQueries';
 
-import SectionMoreProducts from './SectionMoreProducts';
 import SectionNavigation from './SectionNavigation';
 import SectionProductHeader from './SectionProductHeader';
-import SectionProductInfo from './SectionProductInfo';
-import ProductGuideSection from '@/components/ProductGuideSection';
+import Loading from '@/app/loading';
 
 type Props = {
   params: { productId: string };
@@ -40,14 +38,13 @@ const SingleProductPage = (props: Props) => {
   }, [props.params.productId]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div><Loading/></div>;
   }
 
   if (!selectedProduct) {
     return <div>Product not found.</div>;
   }
 
-  // Map the Shopify product data to match component expectations.
   const productData = {
     id: selectedProduct.id,
     shots: selectedProduct.images?.edges?.map((edge: any) => edge.node) || [],
@@ -77,22 +74,6 @@ const SingleProductPage = (props: Props) => {
           pieces_sold={productData.pieces_sold}
           reviews={productData.reviews}
         />
-      </div>
-
-      <div className="mb-28">
-        <SectionProductInfo
-          overview={productData.overview}
-          shipment_details={productData.shipment_details}
-          ratings={productData.rating}
-          reviews={productData.reviews}
-        />
-      </div>
-
-      {/* Render Contentful product guide using GraphQL */}
-      <ProductGuideSection productId={productData.id} />
-
-      <div className="mb-28">
-        <SectionMoreProducts />
       </div>
     </div>
   );

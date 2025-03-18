@@ -9,6 +9,7 @@ import Shopifyclient from '@/lib/shopifyClient';
 import { GET_PRODUCTS_BY_COLLECTION } from '@/queries/shopifyQueries';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
+import Loading from '../loading';
 
 const getProductsByCollection = async (
   collectionId: string,
@@ -29,18 +30,15 @@ const ProductsPageContent = () => {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
 
-  // Filter states
   const [selectedCollection, setSelectedCollection] = useState('All');
   const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 0]);
   const [dynamicPriceRange, setDynamicPriceRange] = useState<[number, number]>([0, 1000]);
 
-  // Pagination states for server-side pagination
   const itemsPerPage = 12;
   const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
   const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetched products and pagination info
   const [products, setProducts] = useState<any[]>([]);
   const [pageInfo, setPageInfo] = useState<{ hasNextPage: boolean; endCursor: string | null }>({
     hasNextPage: false,
@@ -48,14 +46,12 @@ const ProductsPageContent = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Reset pagination when collection or search query changes.
   useEffect(() => {
     setCurrentCursor(undefined);
     setCursorStack([]);
     setCurrentPage(1);
   }, [selectedCollection, searchQuery]);
 
-  // Fetch products whenever filters or currentCursor change.
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -80,7 +76,6 @@ const ProductsPageContent = () => {
           variantId: edge.node.variants?.edges[0]?.node.id || null,
         }));
 
-        // Update dynamic price range if products are returned.
         if (mappedProducts.length > 0) {
           const prices = mappedProducts.map((p: any) => p.price);
           const minPrice = Math.min(...prices);
@@ -90,13 +85,11 @@ const ProductsPageContent = () => {
             setSelectedPriceRange([minPrice, maxPrice]);
           }
         }
-        // Filter products by price range.
         let filteredProducts = mappedProducts.filter(
           (product: any) =>
             product.price >= selectedPriceRange[0] &&
             product.price <= selectedPriceRange[1]
         );
-        // Additionally filter by the search query.
         if (searchQuery) {
           filteredProducts = filteredProducts.filter((product: any) =>
             product.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -113,7 +106,6 @@ const ProductsPageContent = () => {
     fetchProducts();
   }, [selectedCollection, selectedPriceRange, searchQuery, currentCursor]);
 
-  // Handlers for pagination buttons.
   const handleNextPage = () => {
     if (pageInfo?.hasNextPage && pageInfo.endCursor) {
       setCursorStack([...cursorStack, currentCursor]);
@@ -146,7 +138,7 @@ const ProductsPageContent = () => {
       <div className="mb-10 shrink-0 border-t lg:mx-4 lg:mb-0 lg:border-t-0" />
       <div className="relative flex-1">
         {loading ? (
-          <div>Loading products...</div>
+          <div><Loading/></div>
         ) : (
           <>
             <div className="grid flex-1 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">

@@ -9,8 +9,6 @@ import { LuInfo } from 'react-icons/lu';
 import { MdStar } from 'react-icons/md';
 import { PiSealCheckFill } from 'react-icons/pi';
 import ImageShowCase from '@/components/ImageShowCase';
-import ShoeSizeButton from '@/components/ShoeSizeButton';
-import { shoeSizes } from '@/data/content';
 import ButtonCircle3 from '@/shared/Button/ButtonCircle3';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
@@ -131,11 +129,7 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          {shoeSizes.map((size) => (
-            <ShoeSizeButton key={size} size={size} />
-          ))}
-        </div>
+      
 
         <div className="mt-5 flex items-center gap-5">
           <ButtonPrimary onClick={handleBuyNow} className="w-full">

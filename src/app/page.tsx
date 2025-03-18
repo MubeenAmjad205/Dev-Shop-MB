@@ -1,10 +1,10 @@
 import React from 'react'
-import Home from './home/page'
+import ProductsPageContent from './products/page'
 
 
 const RootPage = () => {
   return (
-    <div><Home/></div>
+    <div><ProductsPageContent/></div>
   )
 }
 
