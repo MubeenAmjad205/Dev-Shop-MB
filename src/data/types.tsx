@@ -1,24 +1,63 @@
-import type { StaticImageData } from 'next/image';
 
-export type ProductType = {
+// export interface ProductType {
+//   id: string;
+//   handle: string;
+//   title: string;
+  // images?: {
+  //   edges: Array<{
+  //     node: {
+  //       url: string;
+  //     };
+  //   }>;
+  // };
+  // variants?: {
+  //   edges: Array<{
+  //     node: {
+  //       price: {
+  //         amount: string;
+  //       };
+  //     };
+  //   }>;
+  // };
+//   shots?: any[]; 
+// }
+
+export interface ProductType {
   id: string;
-  slug: string; 
   handle: string;
   title: string;
-  productName: string; // Alias for title, as used in your mapping
-  description?: string;
-  shots: {
-    url: string|StaticImageData;
-    altText?: string;
-  }[];
+  productName?: string;
   currentPrice: number;
-  previousPrice?: number;
-  variantId?: string;
+  slug?: string;
+  shots?: Array<{
+    url: string;
+    altText?: string;
+  }>;
+  variants?: {
+    edges: Array<{
+      node: {
+        price: {
+          amount: string;
+        };
+      };
+    }>;
+  };
+  images?: {
+    edges: Array<{
+      node: {
+        url: string;
+      };
+    }>;
+  };
+  // add other optional fields if needed:
   shoeCategory?: string;
   rating?: number;
-  pieces_sold?: number;
-  justIn?: boolean;
-};
+}
+
+export interface CartItemType {
+  product: ProductType;
+  quantity: number;
+}
 
 
 export type BlogData = {

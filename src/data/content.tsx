@@ -44,7 +44,7 @@ export const topNavLinks: NavItemType[] = [
   {
     id: 'ee46t',
     name: 'Home',
-    href: '/products',
+    href: '/home',
   },
   {
     id: 'ee46t',
@@ -83,7 +83,7 @@ export const NavLinks: NavItemType[] = [
   {
     id: 'ee46t',
     name: 'Home',
-    href: '/products',
+    href: '/home',
   },
   {
     id: 'eerrrt',
@@ -114,18 +114,18 @@ export const NavLinks: NavItemType[] = [
   },
 ];
 
-export const headerSection = {
-  title: 'NEW ARRIVAL!',
-  heading: 'AIR JORDAN 6 GX EASTSIDE',
-  description:
-    "Feel unbeatable from the tee box to the final putt in a design that's pure early MJ: speed, class",
-};
+// export const headerSection = {
+//   title: 'NEW ARRIVAL!',
+//   heading: 'AIR JORDAN 6 GX EASTSIDE',
+//   description:
+//     "Feel unbeatable from the tee box to the final putt in a design that's pure early MJ: speed, class",
+// };
 
-export const promotionTag = {
-  heading: 'DISC UP TO 50% FOR SNEAKERS FEST ID 2023',
-  description:
-    'Join the sneaker fest 2023 on 23 October. We have more fun gigs too and supported by FootWear!.',
-};
+// export const promotionTag = {
+//   heading: 'DISC UP TO 50% FOR SNEAKERS FEST ID 2023',
+//   description:
+//     'Join the sneaker fest 2023 on 23 October. We have more fun gigs too and supported by FootWear!.',
+// };
 
 export const shoes = [
   {

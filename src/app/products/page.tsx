@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/ProductCard';
 import SidebarFilters from '@/components/SideBarFilter';
-import { getProducts } from '@/lib/shopify';
+import { getProducts } from '@/queries/shopifyQueries';
 import Shopifyclient from '@/lib/shopifyClient';
 import { GET_PRODUCTS_BY_COLLECTION } from '@/queries/shopifyQueries';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';

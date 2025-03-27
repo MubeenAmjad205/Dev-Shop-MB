@@ -70,3 +70,33 @@ export const GET_FAQ_PAGE = gql`
     }
   }
 `;
+export const GET_HOME__HEADER_SECTION = gql`
+query GethomeHeaderSection {
+ homeHeaderSectionCollection {
+  items{
+    title
+    heading
+    description
+    image{
+      url
+    }
+    
+  }
+   
+  }
+}
+`
+
+export const GET_HOME__PROMOTION_SECTION = gql`
+query GetPromoTag {
+promotionTagCollection{
+  items{
+    heading
+    description
+    image{
+      url
+    }
+  }
+}
+}
+`
