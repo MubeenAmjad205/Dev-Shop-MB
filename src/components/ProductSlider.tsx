@@ -1,35 +1,63 @@
 'use client';
 
-import React from 'react';
-
-import { shoes } from '@/data/content';
+import React, { useState, useEffect } from 'react';
 import Slider from '@/shared/Slider/Slider';
-
 import ProductCard from './ProductCard';
+import Shopifyclient from '@/lib/shopifyClient';
+import { GET_PRODUCTS_BY_COLLECTION } from '@/queries/shopifyQueries';
+import Loading from '@/app/loading';
+import type { ProductType } from '@/data/types';
 
-// Original data slice from shoes
-const data = shoes.slice(3, 9);
+const ProductCardTyped = ProductCard as React.FC<{
+  product: ProductType;
+  className?: string;
+  showPrevPrice?: boolean;
+}>;
+
+const getProductsByCollection = async (collectionId: string, first: number = 20): Promise<ProductType[]> => {
+  const response = await Shopifyclient.query({
+    query: GET_PRODUCTS_BY_COLLECTION,
+    variables: { collectionId, first },
+  });
+  return response.data.collection.products.edges.map((edge: any) => edge.node) as ProductType[];
+};
 
 const ProductSlider = () => {
-  // Map each product to include the required properties for ProductType
-  const mappedData = data.map((item: any) => ({
-    id: item.id || item.slug || '',
-    handle: item.handle || item.slug || '',
-    title: item.title || item.shoeName || '',
-    slug: item.slug,
-    productName: item.shoeName,
-    coverImage: item.coverImage, // if you're using shots, you might also include item.shots
-    currentPrice: item.currentPrice,
-    previousPrice: item.previousPrice,
-    shoeCategory: item.shoeCategory,
-    rating: item.rating,
-    reviews: item.reviews,
-    pieces_sold: item.pieces_sold,
-    justIn: item.justIn,
-    shots: item.shots,
-    overview: item.overview,
-    shipment_details: item.shipment_details,
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchBestDealsProducts = async () => {
+      setLoading(true);
+      try {
+        const bestDealsProducts = await getProductsByCollection('gid://shopify/Collection/328530264238', 20);
+        setProducts(bestDealsProducts);
+        console.log('Best Deals Products:', bestDealsProducts);
+      } catch (error) {
+        console.error('Error fetching Top Best Deals products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBestDealsProducts();
+  }, []);
+
+  const mappedData = products.map((item: ProductType) => ({
+    id: item.id,
+    handle: item.handle,
+    title: item.title,
+    slug: item.handle, // assuming slug is same as handle
+    productName: item.title,
+    image: item.images?.edges[0]?.node?.url,
+    price: Number(item.variants?.edges[0]?.node.price.amount),
+    currentPrice:Number(item.variants?.edges[0]?.node.price.amount),
+    shots: item.shots || [],
   }));
+
+  console.log(mappedData);
+
+  if (loading) return <div><Loading /></div>;
 
   return (
     <div className="">
@@ -38,9 +66,7 @@ const ProductSlider = () => {
         data={mappedData}
         renderItem={(item) => {
           if (!item) return null;
-          return (
-            <ProductCard showPrevPrice product={item} className="bg-white" />
-          );
+          return <ProductCardTyped product={item} className="bg-white" />;
         }}
       />
     </div>

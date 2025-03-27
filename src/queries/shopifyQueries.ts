@@ -1,4 +1,5 @@
 // src/queries/shopifyQueries.ts
+import shopifyClient from '@/lib/shopifyClient';
 import { gql } from '@apollo/client';
 
 export const GET_PRODUCT_BY_HANDLE = gql`
@@ -143,3 +144,47 @@ export const CREATE_CHECKOUT_MUTATION = gql`
     }
   }
 `;
+export const getProducts = async (first: number = 10, after?: string) => {
+  const GET_PRODUCTS_QUERY = gql`
+    query getProducts($first: Int!, $after: String) {
+      products(first: $first, after: $after) {
+        edges {
+          cursor
+          node {
+            id
+            title
+            handle
+            description
+            images(first: 1) {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  price {
+                    amount
+                  }
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  `;
+
+  const { data } = await shopifyClient.query({
+    query: GET_PRODUCTS_QUERY,
+    variables: { first, after },
+  });
+  return data.products;
+};
+  

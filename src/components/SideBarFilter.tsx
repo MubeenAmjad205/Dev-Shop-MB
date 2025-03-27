@@ -36,6 +36,7 @@ const SidebarFilters: React.FC<{
         const data = response.data;
         const fetchedCollections = data.collections.edges.map((edge: any) => edge.node);
         setCollections(fetchedCollections);
+        console.log("Fetched collections:", fetchedCollections);
       } catch (error) {
         console.error("Error fetching collections:", error);
         setCollectionsError("Error loading collections.");
@@ -109,6 +110,8 @@ const SidebarFilters: React.FC<{
                 $
               </span>
               <input
+              placeholder='0'
+
                 type="text"
                 name="minPrice"
                 disabled
@@ -125,6 +128,7 @@ const SidebarFilters: React.FC<{
                 $
               </span>
               <input
+                placeholder='0'
                 type="text"
                 disabled
                 name="maxPrice"

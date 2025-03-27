@@ -70,15 +70,15 @@ const CheckoutPageContent = () => {
     const { product, quantity } = cartItem;
     const { id, productName, shots, currentPrice, slug, rating, shoeCategory } = product;
     const coverImage = shots?.[0]?.url || '/fallback.jpg';
-    const altText = shots?.[0]?.altText || productName;
+    // const altText = shots?.[0]?.altText || productName;
     const productSlug = slug || id;
     
     return (
       <div key={id} className="flex py-5 last:pb-0">
         <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-xl md:w-40 md:h-40">
           <Image
-            src={coverImage}
-            alt={altText}
+            src={coverImage || ''}
+            alt={ 'image'}
             fill
             sizes="(max-width: 768px) 100vw, 400px"
             className="object-contain object-center"

@@ -5,8 +5,9 @@ import React, { Suspense } from 'react';
 
 import Header from '@/components/Header/Header';
 import Footer from '@/shared/Footer/Footer';
-
+// import Breadcrumb from '@/components/Breadcrumb';
 import Loading from './loading';
+import Breadcrumb from '@/components/Breadcrumb';
 
 export const metadata: Metadata = {
   title: 'Hotkicks Ecommerce Template',
@@ -43,6 +44,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="">
         <Header />
+        <Breadcrumb />
         <Suspense fallback={<Loading />}>{children}</Suspense>
         <Footer />
       </body>

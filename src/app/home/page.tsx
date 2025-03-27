@@ -1,9 +1,7 @@
 import React from 'react';
 
 import SectionBestDeals from './SectionBestDeals';
-import SectionBrands from './SectionBrands';
 import SectionHeader from './SectionHeader';
-import SectionProducts from './SectionProducts';
 
 const Home = () => {
   return (
@@ -16,13 +14,6 @@ const Home = () => {
         <SectionBestDeals />
       </div>
 
-      <div className="mb-32">
-        <SectionProducts />
-      </div>
-
-      <div className="mb-32">
-        <SectionBrands />
-      </div>
     </div>
   );
 };

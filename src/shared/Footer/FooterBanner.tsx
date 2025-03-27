@@ -4,8 +4,9 @@ import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import Heading from '@/shared/Heading/Heading';
 import ButtonPrimary from '../Button/ButtonPrimary';
-import DotLoader from '@/shared/DotLoader/DotLoader';
+// import DotLoader from '@/shared/DotLoader/DotLoader';
 import { contentfulClient } from '@/lib/contentfulGraphQL';
+import Loading from '@/app/loading';
 
 const GET_FOOTER_BANNER = gql`
   query GetFooterBanner {
@@ -30,7 +31,7 @@ const FooterBanner: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-30">
-        <DotLoader />
+        <Loading />
       </div>
     );
   }
