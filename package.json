@@ -30,7 +30,6 @@
   "dependencies": {
     "@apollo/client": "^3.13.2",
     "@better-auth/mongo-adapter": "^1.6.23",
-    "@clerk/nextjs": "^4.24.1",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.1",

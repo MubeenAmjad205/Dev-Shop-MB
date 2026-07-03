@@ -3,6 +3,7 @@
 import React from 'react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { toggleWishlist } from '@/store/slices/wishlistSlice';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 
 export interface LikeButtonProps {
   className?: string;
@@ -15,11 +16,14 @@ const LikeButton: React.FC<LikeButtonProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const isLiked = useAppSelector((state) => state.wishlist?.items?.includes(productId));
+  const requireAuth = useRequireAuth();
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault(); 
     e.stopPropagation();
-    dispatch(toggleWishlist(productId));
+    requireAuth(() => {
+      dispatch(toggleWishlist(productId));
+    });
   };
 
   return (
