@@ -2,55 +2,49 @@
 
 import 'rc-slider/assets/index.css';
 import Slider from 'rc-slider';
-import React, { useState, useEffect } from 'react';
-
+import React, { useState } from 'react';
 import Heading from '@/shared/Heading/Heading';
-import DotLoader from '@/shared/DotLoader/DotLoader';
+import { useQueryState, parseAsString, parseAsInteger } from 'nuqs';
 
-import { GET_COLLECTIONS } from '@/queries/shopifyQueries';
-import Shopifyclient from '@/lib/shopifyClient';
-
-
+interface Collection {
+  id: string;
+  title: string;
+}
 
 const SidebarFilters: React.FC<{
+  collections: Collection[];
   selectedCollection: string;
-  onSelectCollection: (collectionId: string) => void;
-  priceRange: number[];
-  onPriceRangeChange: (range: [number, number]) => void;
-  dynamicPriceRange: number[];
+  initialPriceRange: [number, number];
 }> = ({
+  collections,
   selectedCollection,
-  onSelectCollection,
-  priceRange,
-  onPriceRangeChange,
-  dynamicPriceRange,
+  initialPriceRange,
 }) => {
-  const [collections, setCollections] = useState<any[]>([]);
-  const [collectionsLoading, setCollectionsLoading] = useState(true);
-  const [collectionsError, setCollectionsError] = useState<string | null>(null);
+  // Using nuqs for highly optimized, type-safe URL state syncing without full page reloads
+  const [collectionParam, setCollectionParam] = useQueryState('collection', parseAsString.withDefault('All'));
+  const [minPriceParam, setMinPriceParam] = useQueryState('minPrice', parseAsInteger.withDefault(0));
+  const [maxPriceParam, setMaxPriceParam] = useQueryState('maxPrice', parseAsInteger.withDefault(2000));
+  const [, setCursorParam] = useQueryState('cursor'); // Just to clear it
 
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const response = await Shopifyclient.query({ query: GET_COLLECTIONS });
-        const data = response.data;
-        const fetchedCollections = data.collections.edges.map((edge: any) => edge.node);
-        setCollections(fetchedCollections);
-        console.log("Fetched collections:", fetchedCollections);
-      } catch (error) {
-        console.error("Error fetching collections:", error);
-        setCollectionsError("Error loading collections.");
-      } finally {
-        setCollectionsLoading(false);
-      }
-    };
-    fetchCollections();
-  }, []);
+  const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
+  const dynamicPriceRange = [0, 2000];
+
+  const handleCollectionSelect = (id: string) => {
+    setCursorParam(null); // Reset cursor on filter change
+    setCollectionParam(id === 'All' ? null : id); // null removes the param
+  };
+
+  // Debounce the slider change to prevent spamming the server
+  const handlePriceChangeComplete = (value: number | number[]) => {
+    if (Array.isArray(value) && value.length === 2 && value[0] !== undefined && value[1] !== undefined) {
+      setCursorParam(null);
+      setMinPriceParam(value[0] > 0 ? value[0] : null);
+      setMaxPriceParam(value[1] < 2000 ? value[1] : null);
+    }
+  };
 
   const renderCollections = () => {
-    if (collectionsLoading)
-      return <div className="flex justify-center items-center h-20"><DotLoader /></div>;
-    if (collectionsError) return <div>{collectionsError}</div>;
+    if (!collections || collections.length === 0) return null;
 
     return (
       <div className="mb-4">
@@ -59,18 +53,18 @@ const SidebarFilters: React.FC<{
           <button
             key="all-collections"
             type="button"
-            onClick={() => onSelectCollection('All')}
+            onClick={() => handleCollectionSelect('All')}
             className={`px-4 py-2 rounded whitespace-nowrap ${
               selectedCollection === 'All' ? 'bg-primary text-white' : 'bg-gray'
             }`}
           >
             All
           </button>
-          {collections.map((collection: any) => (
+          {collections.map((collection) => (
             <button
               key={collection.id}
               type="button"
-              onClick={() => onSelectCollection(collection.id)}
+              onClick={() => handleCollectionSelect(collection.id)}
               className={`px-4 py-2 rounded whitespace-nowrap ${
                 selectedCollection === collection.id ? 'bg-primary text-white' : 'bg-gray'
               }`}
@@ -92,14 +86,15 @@ const SidebarFilters: React.FC<{
             range
             min={dynamicPriceRange[0]}
             max={dynamicPriceRange[1]}
-            step={1}
+            step={10}
             value={priceRange}
             allowCross={false}
             onChange={(newRange: number | number[]) => {
               if (Array.isArray(newRange) && newRange.length === 2) {
-                onPriceRangeChange(newRange as [number, number]);
+                setPriceRange(newRange as [number, number]);
               }
             }}
+            onChangeComplete={handlePriceChangeComplete}
           />
         </div>
         <div className="flex justify-between space-x-5">
@@ -110,13 +105,10 @@ const SidebarFilters: React.FC<{
                 $
               </span>
               <input
-              placeholder='0'
-
+                placeholder='0'
                 type="text"
-                name="minPrice"
                 disabled
-                id="minPrice"
-                className="block w-32 rounded-full border-neutral-300 bg-transparent pl-4 pr-10 sm:text-sm"
+                className="block w-32 rounded-full border-neutral-300 bg-transparent pl-4 pr-10 sm:text-sm opacity-50"
                 value={priceRange[0]}
               />
             </div>
@@ -128,12 +120,10 @@ const SidebarFilters: React.FC<{
                 $
               </span>
               <input
-                placeholder='0'
+                placeholder='2000'
                 type="text"
                 disabled
-                name="maxPrice"
-                id="maxPrice"
-                className="block w-32 rounded-full border-neutral-300 bg-transparent pl-4 pr-10 sm:text-sm"
+                className="block w-32 rounded-full border-neutral-300 bg-transparent pl-4 pr-10 sm:text-sm opacity-50"
                 value={priceRange[1]}
               />
             </div>
@@ -143,13 +133,11 @@ const SidebarFilters: React.FC<{
     );
   };
 
-  
-
   return (
-    <div className="top-28 lg:sticky ">
+    <div className="top-28 lg:sticky">
       <Heading className="mb-0">Filter products</Heading>
       {renderCollections()}
-      <div className="divide-y divide-neutral-300 ">
+      <div className="divide-y divide-neutral-300">
         {renderTabsPriceRage()}
       </div>
     </div>

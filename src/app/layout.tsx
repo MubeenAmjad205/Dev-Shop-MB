@@ -8,9 +8,15 @@ import Footer from '@/shared/Footer/Footer';
 // import Breadcrumb from '@/components/Breadcrumb';
 import Loading from './loading';
 import Breadcrumb from '@/components/Breadcrumb';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { Toaster } from 'react-hot-toast';
+
+import globalConfig from '@/core/config/global.json';
 
 export const metadata: Metadata = {
-  title: 'Hotkicks Ecommerce Template',
+  title: globalConfig.seo.defaultTitle,
+  description: globalConfig.seo.defaultDescription,
   icons: [
     {
       rel: 'apple-touch-icon',
@@ -28,10 +34,6 @@ export const metadata: Metadata = {
       sizes: '16x16',
       url: '/favicon.png',
     },
-    {
-      rel: 'icon',
-      url: '/favicon.ico',
-    },
   ],
 };
 
@@ -42,11 +44,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="">
-        <Header />
-        <Breadcrumb />
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-        <Footer />
+      <body className="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 transition-colors duration-300">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <NuqsAdapter>
+            <Header />
+            <Breadcrumb />
+            <Suspense fallback={<Loading />}>{children}</Suspense>
+            <Footer />
+            <Toaster position="bottom-right" toastOptions={{ className: 'dark:bg-neutral-800 dark:text-white' }} />
+          </NuqsAdapter>
+        </ThemeProvider>
       </body>
     </html>
   );

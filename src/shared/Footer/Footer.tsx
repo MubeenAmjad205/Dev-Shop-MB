@@ -1,54 +1,21 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { contentfulClient } from '@/lib/contentfulGraphQL'; // Your configured Contentful Apollo client
-import { GET_FOOTER_DESCRIPTION, GET_FOOTER_LINKS } from '@/queries/contentfulQueries';
 import Logo from '../Logo/Logo';
 import FooterBanner from './FooterBanner';
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
-import Loading from '@/app/loading';
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaTiktok } from 'react-icons/fa';
+import { footerData } from '@/data/content';
+import globalConfig from '@/core/config/global.json';
 
 const Footer: React.FC = () => {
-  const [footerDescription, setFooterDescription] = useState<string>('Loading...');
-  const [footerLinks, setFooterLinks] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<any>(null);
+  const { description, footerLinks } = footerData;
 
-  useEffect(() => {
-    const fetchFooterData = async () => {
-      try {
-        const [descResponse, linksResponse] = await Promise.all([
-          contentfulClient.query({
-            query: GET_FOOTER_DESCRIPTION,
-          }),
-          contentfulClient.query({
-            query: GET_FOOTER_LINKS,
-          }),
-        ]);
-
-        const description = descResponse.data.footerDescriptionCollection.items[0]?.description;
-        const links = linksResponse.data.footerLinksCollection.items;
-        setFooterDescription(description);
-        setFooterLinks(links);
-      } catch (err) {
-        console.error('Error fetching footer data:', err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFooterData();
-  }, []);
-
-  // Social media links (static or add to your Contentful data if needed)
+  // Social media links from global config
   const socialMediaLinks = [
-    { platform: 'Facebook', url: 'https://facebook.com/HotKicks' },
-    { platform: 'Twitter', url: 'https://twitter.com/HotKicks' },
-    { platform: 'Instagram', url: 'https://instagram.com/HotKicks' },
-    { platform: 'LinkedIn', url: 'https://linkedin.com/company/HotKicks' },
-  ];
+    { platform: 'Facebook', url: globalConfig.socialLinks.facebook },
+    { platform: 'Twitter', url: globalConfig.socialLinks.twitter },
+    { platform: 'Instagram', url: globalConfig.socialLinks.instagram },
+    ...(globalConfig.socialLinks.tiktok ? [{ platform: 'TikTok', url: globalConfig.socialLinks.tiktok }] : []),
+  ].filter(link => link.url !== "");
 
   const getSocialIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
@@ -60,18 +27,12 @@ const Footer: React.FC = () => {
         return <FaInstagram />;
       case 'linkedin':
         return <FaLinkedinIn />;
+      case 'tiktok':
+        return <FaTiktok />;
       default:
         return null;
     }
   };
-
-  if (loading) {
-    return <div><Loading/></div>;
-  }
-
-  if (error) {
-    return <div>Error loading footer.</div>;
-  }
 
   return (
     <div>
@@ -84,7 +45,7 @@ const Footer: React.FC = () => {
           {/* Left Column: Logo, Description, and Social Media Icons */}
           <div className="space-y-10 md:pr-20">
             <Logo className="block" />
-            <p>{footerDescription}</p>
+            <p>{description}</p>
             <div className="flex space-x-4">
               {socialMediaLinks.map((social) => (
                 <Link key={social.platform} href={social.url}>
@@ -97,10 +58,17 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Right Column: Footer Links */}
-          <div className="grid grid-cols-2 gap-5">
-            {footerLinks.map((linkItem) => (
-              <div key={linkItem.url}>
-                <Link href={linkItem.url}>{linkItem.link}</Link>
+          <div className="flex flex-row justify-between w-full">
+            {footerLinks.map((column) => (
+              <div key={column.title}>
+                <h4 className="font-semibold text-lg mb-4">{column.title}</h4>
+                <div className="flex flex-col space-y-2">
+                  {column.links.map((link) => (
+                    <Link key={link.name} href={link.href} className="text-gray-400 hover:text-white">
+                      {link.name}
+                    </Link>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -111,4 +79,3 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
-  

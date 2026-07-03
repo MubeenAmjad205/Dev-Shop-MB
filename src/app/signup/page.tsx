@@ -1,13 +1,47 @@
-import Link from 'next/link';
-import React from 'react';
-import { FaGoogle } from 'react-icons/fa6';
+'use client';
 
+import Link from 'next/link';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
-import ButtonSecondary from '@/shared/Button/ButtonSecondary';
 import FormItem from '@/shared/FormItem';
 import Input from '@/shared/Input/Input';
 
 const PageSignUp = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Sign up failed');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during sign up');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className={`nc-PageSignUp `} data-nc-id="PageSignUp">
       <div className="container mb-24 lg:mb-32">
@@ -15,22 +49,39 @@ const PageSignUp = () => {
           Signup
         </h2>
         <div className="mx-auto max-w-md ">
-          <div className="space-y-6">
-            <div className="">
-              <ButtonSecondary className="flex w-full items-center gap-3 border-2 border-primary text-primary">
-                <FaGoogle className="text-2xl" /> Continue with Google
-              </ButtonSecondary>
-            </div>
-            <div className="relative text-center">
-              <span className="relative z-10 inline-block rounded-full bg-gray px-4 text-sm font-medium ">
-                OR
-              </span>
-              <div className="absolute left-0 top-1/2 w-full -translate-y-1/2 border border-neutral-300" />
-            </div>
+          <form onSubmit={handleSignUp} className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
+              {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+              <div className="grid grid-cols-2 gap-4">
+                <FormItem label="First Name">
+                  <Input
+                    type="text"
+                    required
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    rounded="rounded-full"
+                    sizeClass="h-12 px-4 py-3"
+                    className="border-neutral-300 bg-transparent placeholder:text-neutral-500 focus:border-primary"
+                  />
+                </FormItem>
+                <FormItem label="Last Name">
+                  <Input
+                    type="text"
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    rounded="rounded-full"
+                    sizeClass="h-12 px-4 py-3"
+                    className="border-neutral-300 bg-transparent placeholder:text-neutral-500 focus:border-primary"
+                  />
+                </FormItem>
+              </div>
               <FormItem label="Email address">
                 <Input
                   type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   rounded="rounded-full"
                   sizeClass="h-12 px-4 py-3"
                   placeholder="example@example.com"
@@ -40,20 +91,25 @@ const PageSignUp = () => {
               <FormItem label="Password">
                 <Input
                   type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   rounded="rounded-full"
                   sizeClass="h-12 px-4 py-3"
                   className="border-neutral-300 bg-transparent placeholder:text-neutral-500 focus:border-primary"
                 />
               </FormItem>
-              <ButtonPrimary>Continue</ButtonPrimary>
+              <ButtonPrimary type="submit" disabled={loading}>
+                {loading ? 'Signing up...' : 'Create Account'}
+              </ButtonPrimary>
             </div>
-            <span className="block text-center text-sm text-neutral-500">
+            <span className="block text-center text-sm text-neutral-500 mt-4">
               Already have an account? {` `}
-              <Link href="/login" className="text-primary">
+              <Link href="/login" className="text-primary hover:underline">
                 Login
               </Link>
             </span>
-          </div>
+          </form>
         </div>
       </div>
     </div>

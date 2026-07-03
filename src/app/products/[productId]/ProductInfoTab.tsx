@@ -10,7 +10,7 @@ import Heading from '@/shared/Heading/Heading';
 interface ProductInfoTabProps {
   overview: string;
   shipment_details: {
-    icon: JSX.Element;
+    icon: React.ReactNode;
     title: string;
     description: string;
   }[];

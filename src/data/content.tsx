@@ -51,11 +51,11 @@ export const topNavLinks: NavItemType[] = [
     name: 'Products',
     href: '/products',
   },
-  {
-    id: 'eerrrt',
-    name: 'Blog',
-    href: '/blog',
-  },
+  // {
+  //   id: 'eerrrt',
+  //   name: 'Blog',
+  //   href: '/blog',
+  // },
   {
     id: 'eexct',
     name: 'Collections',
@@ -85,11 +85,11 @@ export const NavLinks: NavItemType[] = [
     name: 'Home',
     href: '/home',
   },
-  {
-    id: 'eerrrt',
-    name: 'Blog',
-    href: '/blog',
-  },
+  // {
+  //   id: 'eerrrt',
+  //   name: 'Blog',
+  //   href: '/blog',
+  // },
   {
     id: 'eexct',
     name: 'Collection',
@@ -114,18 +114,18 @@ export const NavLinks: NavItemType[] = [
   },
 ];
 
-// export const headerSection = {
-//   title: 'NEW ARRIVAL!',
-//   heading: 'AIR JORDAN 6 GX EASTSIDE',
-//   description:
-//     "Feel unbeatable from the tee box to the final putt in a design that's pure early MJ: speed, class",
-// };
+export const headerSection = {
+  title: 'NEW ARRIVAL!',
+  heading: 'PREMIUM KIDS TOYS & CARE',
+  description:
+    "Discover our exclusive collection of safe, engaging toys and gentle care products designed for your little ones. Quality you can trust, joy they will love.",
+};
 
-// export const promotionTag = {
-//   heading: 'DISC UP TO 50% FOR SNEAKERS FEST ID 2023',
-//   description:
-//     'Join the sneaker fest 2023 on 23 October. We have more fun gigs too and supported by FootWear!.',
-// };
+export const promotionTag = {
+  heading: 'DISC UP TO 50% FOR SUMMER TOYS FEST 2024',
+  description:
+    'Join our summer fest! Grab the best deals on learning toys, baby care essentials, and more.',
+};
 
 export const shoes = [
   {
@@ -632,14 +632,14 @@ export const brandsSection = {
 };
 
 export const footerBannerData = {
-  heading: 'BRINGING YOU TO UPDATE WITH FANTASTIC FOOTWEAR',
+  heading: 'BRINGING YOU THE BEST FOR YOUR FAMILY',
   description:
-    'View all brands of our collection on HotKicks, there is another collection. Please check it out bro, like seriously',
+    'Explore our carefully curated selection of Kids Toys and Care products. We prioritize safety, quality, and joy for your growing family.',
 };
 
 export const footerData = {
   description:
-    'HotKicks was designed and founded in 2023 by Person. The theme is about sneakers ecommerce thet use for shoes selling around the world.',
+    'Dev Shop MB was designed to bring the best products to your doorstep. We specialize in Kids Toys and Care, with plans to expand into Beauty and Wellness.',
   footerLinks: [
     {
       title: 'Main Pages',
@@ -648,17 +648,17 @@ export const footerData = {
         { href: '/products', name: 'Collections' },
         { href: '/cart', name: 'Cart' },
         { href: '/checkout', name: 'Checkout' },
-        { href: '/blog', name: 'Blogs' },
+        // { href: '/blog', name: 'Blogs' },
       ],
     },
     {
       title: 'Single Pages',
       links: [
         { href: '/product/yellowLow', name: 'Product Single' },
-        {
-          href: '/blog/the-evolution-of-sneaker-culture-a-historical-perspective',
-          name: 'Blog Single',
-        },
+        // {
+        //   href: '/blog/the-evolution-of-sneaker-culture-a-historical-perspective',
+        //   name: 'Blog Single',
+        // },
       ],
     },
     {

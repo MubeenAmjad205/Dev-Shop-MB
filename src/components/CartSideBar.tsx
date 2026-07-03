@@ -6,19 +6,19 @@ import Link from 'next/link';
 import React, { Fragment, useEffect, useState } from 'react';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FaBagShopping } from 'react-icons/fa6';
-import { MdClose, MdStar } from 'react-icons/md';
+import { MdClose } from 'react-icons/md';
 
 import ButtonCircle3 from '@/shared/Button/ButtonCircle3';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
 import InputNumber from '@/shared/InputNumber/InputNumber';
-import LikeButton from './LikeButton';
+import Loading from '@/app/loading';
 
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { removeItem, updateQuantity } from '@/store/slices/cartSlice';
-import type { ProductType } from '@/data/types';
+import { removeCartItemAsync, updateCartItemAsync, fetchCartAsync, CartItem } from '@/store/slices/cartSlice';
+import toast from 'react-hot-toast';
 
 export interface CartSideBarProps {}
 
@@ -27,36 +27,60 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
   const [isVisible, setIsVisible] = useState(false);
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
+  const checkoutUrl = useAppSelector((state) => state.cart.checkoutUrl);
+  const cartId = useAppSelector((state) => state.cart.cartId);
+  const cartStatus = useAppSelector((state) => state.cart.status);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (cartId) {
+      dispatch(fetchCartAsync(cartId));
+    }
+  }, [cartId, dispatch]);
 
   if (!mounted) return <div style={{ visibility: 'hidden' }} />;
 
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
   const totalAmount = cartItems.reduce(
-    (total, item) => total + Number(item.product.currentPrice) * item.quantity,
+    (total, item) => total + item.price * item.quantity,
     0
   );
 
   const handleOpenMenu = () => setIsVisible(true);
   const handleCloseMenu = () => setIsVisible(false);
 
-  const renderProduct = (cartItem: { product: ProductType; quantity: number }) => {
-    const { product, quantity } = cartItem;
-    const { id, productName, shots, currentPrice, rating } = product;
-    const coverImage = shots && shots.length > 0 ? shots[0]?.url : '/fallback.jpg';
-    const altText = shots && shots.length > 0 ? shots[0]?.altText : productName;
-    const productSlug = id;
+  const handleRemoveItem = async (id: string) => {
+    const toastId = toast.loading('Removing item...');
+    const resultAction = await dispatch(removeCartItemAsync(id));
+    if (removeCartItemAsync.fulfilled.match(resultAction)) {
+      toast.success('Item removed', { id: toastId });
+    } else {
+      toast.error('Failed to remove item', { id: toastId });
+    }
+  };
+
+  const handleUpdateQuantity = async (id: string, newVal: number) => {
+    const toastId = toast.loading('Updating quantity...');
+    const resultAction = await dispatch(updateCartItemAsync({ lineId: id, quantity: newVal }));
+    if (updateCartItemAsync.fulfilled.match(resultAction)) {
+      toast.success('Quantity updated', { id: toastId });
+    } else {
+      toast.error('Failed to update quantity', { id: toastId });
+    }
+  };
+
+  const renderProduct = (item: CartItem) => {
+    const { id, title, price, quantity, image, productHandle } = item;
+    const coverImage = image || '/fallback.jpg';
+    const productSlug = productHandle || '#';
 
     return (
       <div key={id} className="flex py-5 last:pb-0">
         <div className="relative size-24 shrink-0 overflow-hidden rounded-xl">
           <Image
             fill
-            src={coverImage?coverImage:''}
-            alt={altText? altText:'Image'}
+            src={coverImage}
+            alt={title}
             className="size-full object-contain object-center"
           />
           <Link onClick={handleCloseMenu} className="absolute inset-0" href={`/products/${productSlug}`} />
@@ -67,30 +91,24 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
               <div>
                 <h3 className="font-medium">
                   <Link onClick={handleCloseMenu} href={`/products/${productSlug}`}>
-                    {productName}
+                    {title}
                   </Link>
                 </h3>
-                <div className="flex items-center gap-1">
-                  <MdStar className="text-yellow-400" />
-                  <span className="text-sm">{rating}</span>
-                </div>
               </div>
-              <span className="font-medium">${currentPrice}</span>
+              <span className="font-medium">${price}</span>
             </div>
-            <p className="text-sm text-neutral-500">Quantity: {quantity}</p>
           </div>
-          <div className="flex w-full items-end justify-between text-sm">
+          <div className="flex w-full items-end justify-between text-sm mt-4">
             <div className="flex items-center gap-3">
-              <LikeButton />
               <AiOutlineDelete
-                className="text-2xl cursor-pointer"
-                onClick={() => dispatch(removeItem(id))}
+                className="text-2xl cursor-pointer text-red-500 transition-colors hover:text-red-700"
+                onClick={() => handleRemoveItem(id)}
               />
             </div>
             <div>
               <InputNumber
                 value={quantity}
-                onChange={(newVal) => dispatch(updateQuantity({ id, quantity: newVal }))}
+                onChange={(newVal) => handleUpdateQuantity(id, newVal)}
               />
             </div>
           </div>
@@ -113,24 +131,26 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
             leaveTo="opacity-0 translate-x-full"
           >
             <div className="relative z-20">
-              <div className="overflow-hidden shadow-lg ring-1 ring-black/5">
-                <div className="relative h-screen bg-white">
-                  <div className="hiddenScrollbar h-screen overflow-y-auto p-5">
+              <div className="overflow-hidden shadow-lg ring-1 ring-black/5 rounded-l-3xl">
+                <div className="relative h-screen bg-surface dark:bg-neutral-900 transition-colors duration-300">
+                  <div className="hiddenScrollbar h-screen overflow-y-auto p-5 pb-40">
                     <div className="flex items-center justify-between">
                       <h3 className="text-xl font-semibold">Shopping cart</h3>
                       <ButtonCircle3 onClick={handleCloseMenu}>
                         <MdClose className="text-2xl" />
                       </ButtonCircle3>
                     </div>
-                    <div className="divide-y divide-neutral-300">
-                      {cartItems.length > 0 ? (
+                    <div className="divide-y divide-neutral-300 mt-4">
+                      {cartStatus === 'loading' && cartItems.length === 0 ? (
+                         <div className="flex justify-center p-10"><Loading /></div>
+                      ) : cartItems.length > 0 ? (
                         cartItems.map((item) => renderProduct(item))
                       ) : (
                         <p className="py-5 text-center">Your cart is empty.</p>
                       )}
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 w-full bg-neutral-50 p-5">
+                  <div className="absolute bottom-0 left-0 w-full bg-neutral-50 p-5 shadow-2xl">
                     <p className="flex justify-between">
                       <span>
                         <span className="font-medium">Subtotal</span>
@@ -142,7 +162,7 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
                     </p>
                     <div className="mt-5 flex items-center gap-5">
                       <ButtonPrimary
-                        href="/checkout"
+                        href={checkoutUrl || '/cart'}
                         onClick={handleCloseMenu}
                         className="w-full flex-1"
                       >

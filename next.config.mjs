@@ -7,10 +7,6 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 export default bundleAnalyzer({
-  eslint: {
-    dirs: ['.'],
-  },
-  swcMinify: false,
   images: {
     remotePatterns: [
       {
@@ -58,4 +54,5 @@ export default bundleAnalyzer({
 
     return config;
   },
+  turbopack: {},
 });
