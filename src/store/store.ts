@@ -1,7 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import cartReducer, { CartState } from './slices/cartSlice';
 import wishlistReducer, { WishlistState } from './slices/wishlistSlice';
-import authModalReducer from './slices/authModalSlice';
+import authModalReducer, { AuthModalState } from './slices/authModalSlice';
 
 const rootReducer = combineReducers({
   cart: cartReducer,
@@ -51,4 +51,4 @@ store.subscribe(() => {
 export type AppDispatch = typeof store.dispatch;
 
 // Re-export CartState so that it can be named.
-export type { CartState, WishlistState };
+export type { CartState, WishlistState, AuthModalState };

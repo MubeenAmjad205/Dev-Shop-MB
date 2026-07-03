@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-interface AuthModalState {
+export interface AuthModalState {
   isOpen: boolean;
 }
 
