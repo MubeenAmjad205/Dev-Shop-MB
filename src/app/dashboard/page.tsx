@@ -21,7 +21,7 @@ async function getCustomerData(token: string) {
 }
 
 export default async function DashboardPage() {
-  const token = cookies().get('customerAccessToken')?.value;
+  const token = (await cookies()).get('customerAccessToken')?.value;
 
   if (!token) {
     redirect('/login');
