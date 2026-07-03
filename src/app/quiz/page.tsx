@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import Input from '@/shared/Input/Input';
+import config from '@/core/config/global.json';
+
+const currency = config.currency.symbol;
 
 const TOTAL_STEPS = 5;
 
@@ -28,12 +31,7 @@ const interestOptions = [
   { id: 'plush', label: 'Plush Toys', icon: '🧸' },
 ];
 
-const budgetOptions = [
-  { id: '20', label: 'Under $20', icon: '💵' },
-  { id: '50', label: 'Under $50', icon: '🎁' },
-  { id: '100', label: 'Under $100', icon: '💎' },
-  { id: 'any', label: 'No limit', icon: '👑' },
-];
+// Removed budgetOptions as we are now using a continuous slider
 
 export default function QuizPage() {
   const router = useRouter();
@@ -44,7 +42,7 @@ export default function QuizPage() {
   const [age, setAge] = useState('');
   const [category, setCategory] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
-  const [budget, setBudget] = useState('');
+  const [budget, setBudget] = useState(5000);
   const [contact, setContact] = useState({ name: '', phone: '', email: '' });
 
   const nextStep = () => {
@@ -69,7 +67,7 @@ export default function QuizPage() {
     const query = new URLSearchParams();
     if (age) query.set('age', age);
     if (category && category !== 'neutral') query.set('category', category);
-    if (budget && budget !== 'any') query.set('maxPrice', budget);
+    query.set('maxPrice', budget.toString());
     
     router.push(`/products?${query.toString()}`);
   };
@@ -78,7 +76,7 @@ export default function QuizPage() {
     if (step === 1) return !!age;
     if (step === 2) return !!category;
     if (step === 3) return interests.length > 0;
-    if (step === 4) return !!budget;
+    if (step === 4) return true; // Slider always has a value
     return true; // Step 5 has optional/text fields checked on submit
   };
 
@@ -100,11 +98,53 @@ export default function QuizPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-10 px-4 flex items-center justify-center">
-      <div className="w-full max-w-[420px] bg-white dark:bg-neutral-800 rounded-[2.5rem] shadow-2xl overflow-hidden border-[8px] border-neutral-900 dark:border-neutral-700 relative h-[800px] flex flex-col">
-        
-        {/* Notch */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-neutral-900 dark:bg-neutral-700 rounded-b-3xl z-20" />
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 overflow-hidden relative">
+      {/* Background decorations */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-teal-100/50 dark:bg-teal-900/20 rounded-full filter blur-[100px] -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-100/50 dark:bg-blue-900/20 rounded-full filter blur-[100px] translate-x-1/3 translate-y-1/3" />
+
+      <div className="container mx-auto px-4 py-12 lg:py-20 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20 max-w-6xl mx-auto">
+          
+          {/* Left Side Content */}
+          <div className="flex-1 w-full text-center lg:text-left space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full text-sm font-bold shadow-sm">
+              <span className="text-lg">✨</span> AI-Powered Toy Finder
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-neutral-900 dark:text-white leading-tight tracking-tight">
+              Find the <span className="text-teal-500">Perfect Toy</span><br />
+              for Your Child
+            </h1>
+            
+            <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+              Stop scrolling through hundreds of toys. Answer a few quick questions and our AI instantly recommends the best toys from our store, personalised just for your child.
+            </p>
+
+            <div className="space-y-4 max-w-md mx-auto lg:mx-0 text-left">
+              {[
+                { icon: '⚡', text: 'Takes less than 1 minute' },
+                { icon: '🎯', text: 'Age-appropriate recommendations' },
+                { icon: '💰', text: 'Always within your budget' },
+                { icon: '🛡️', text: '100% safe & quality toys only' },
+                { icon: '🚚', text: 'Fast delivery across Pakistan' },
+              ].map((benefit, i) => (
+                <div key={i} className="flex items-center gap-4 bg-white/60 dark:bg-neutral-800/60 backdrop-blur-sm p-3 rounded-2xl border border-neutral-100 dark:border-neutral-700/50">
+                  <div className="w-10 h-10 bg-teal-50 dark:bg-teal-900/30 rounded-xl flex items-center justify-center text-lg">
+                    {benefit.icon}
+                  </div>
+                  <span className="font-bold text-neutral-800 dark:text-neutral-200">{benefit.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Side - Phone Mockup */}
+          <div className="flex-1 w-full flex justify-center lg:justify-end">
+            <div className="w-full max-w-[400px] bg-white dark:bg-neutral-800 rounded-[3rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border-[8px] border-neutral-900 dark:border-neutral-700 relative h-[780px] flex flex-col transform transition-transform hover:-translate-y-2 duration-500">
+              
+              {/* Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-neutral-900 dark:bg-neutral-700 rounded-b-3xl z-20" />
 
         {/* Header */}
         <div className="pt-12 pb-4 px-6 border-b border-neutral-100 dark:border-neutral-700 flex items-center justify-between">
@@ -226,29 +266,36 @@ export default function QuizPage() {
                 </div>
               )}
 
-              {/* STEP 4: BUDGET */}
+              {/* STEP 4: BUDGET SLIDER */}
               {step === 4 && (
                 <div className="space-y-6">
                   <div className="text-center space-y-2">
                     <span className="inline-block px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full text-xs font-bold">Step 4 of 5</span>
-                    <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white">Set a budget</h2>
-                    <p className="text-neutral-500 text-sm">We'll find the best options in your range.</p>
+                    <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white">Set a budget limit</h2>
+                    <p className="text-neutral-500 text-sm">We'll find the best toys within your range.</p>
                   </div>
-                  <div className="space-y-4 mt-8">
-                    {budgetOptions.map((opt) => (
-                      <button
-                        key={opt.id}
-                        onClick={() => { setBudget(opt.id); setTimeout(nextStep, 300); }}
-                        className={`w-full flex items-center justify-between p-5 rounded-2xl border-2 transition-all duration-200 ${
-                          budget === opt.id 
-                            ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' 
-                            : 'border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:border-teal-200'
-                        }`}
-                      >
-                        <span className="font-bold text-base text-neutral-800 dark:text-neutral-200">{opt.label}</span>
-                        <span className="text-2xl">{opt.icon}</span>
-                      </button>
-                    ))}
+                  
+                  <div className="mt-12 bg-white dark:bg-neutral-800 p-8 rounded-[2rem] border-2 border-neutral-100 dark:border-neutral-700 shadow-sm text-center">
+                    <div className="text-4xl font-extrabold text-teal-500 mb-2">
+                      {currency} {budget.toLocaleString()}
+                    </div>
+                    <p className="text-neutral-400 text-sm font-medium mb-8">Maximum Price</p>
+                    
+                    <input 
+                      type="range" 
+                      min="100" 
+                      max="20000" 
+                      step="100"
+                      value={budget}
+                      onChange={(e) => setBudget(Number(e.target.value))}
+                      className="w-full h-3 bg-neutral-100 dark:bg-neutral-700 rounded-full appearance-none outline-none cursor-pointer accent-teal-500"
+                    />
+                    
+                    <div className="flex justify-between text-xs text-neutral-400 font-bold mt-4">
+                      <span>{currency} 100</span>
+                      <span>{currency} 10k</span>
+                      <span>{currency} 20k</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -322,7 +369,10 @@ export default function QuizPage() {
           )}
         </div>
 
-      </div>
+      </div> {/* End phone mockup */}
+      </div> {/* End right column */}
+      </div> {/* End flex container */}
+      </div> {/* End container */}
     </div>
   );
 }
