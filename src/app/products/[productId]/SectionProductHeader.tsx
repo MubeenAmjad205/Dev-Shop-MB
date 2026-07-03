@@ -13,11 +13,9 @@ import ButtonCircle3 from '@/shared/Button/ButtonCircle3';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
 import Heading from '@/shared/Heading/Heading';
-import { addItem } from '@/store/slices/cartSlice';
+import { addToCartAsync } from '@/store/slices/cartSlice';
 import { useAppDispatch } from '@/store/hooks';
-import {  useMutation } from '@apollo/client';
-import shopifyClient from '@/lib/shopifyClient';
-import {CREATE_CHECKOUT_MUTATION} from'@/queries/shopifyQueries';
+import toast from 'react-hot-toast';
 
 interface SectionProductHeaderProps {
   shots: StaticImageData[];
@@ -44,41 +42,33 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [checkoutCreate] = useMutation(CREATE_CHECKOUT_MUTATION, {
-    client: shopifyClient,
-  });
-
-  const handleAddToCart = () => {
-    dispatch(
-      addItem({
-        product: productData,
+  const handleAddToCart = async () => {
+    if (!productData.variantId) {
+      toast.error('Product variant not available');
+      return;
+    }
+    const toastId = toast.loading('Adding to cart...');
+    const resultAction = await dispatch(
+      addToCartAsync({
+        variantId: productData.variantId,
         quantity: 1,
       })
     );
+    if (addToCartAsync.fulfilled.match(resultAction)) {
+      toast.success('Added to cart successfully!', { id: toastId });
+    } else {
+      toast.error('Failed to add to cart', { id: toastId });
+    }
   };
 
   const handleBuyNow = async () => {
-    if (!productData.variantId) {
-      console.error('Variant ID is missing.');
-      return;
-    }
-    try {
-      const input = {
-        lineItems: [
-          {
-            variantId: productData.variantId,
-            quantity: 1,
-          },
-        ],
-      };
-      const { data } = await checkoutCreate({ variables: { input } });
-      if (data.checkoutCreate.checkout) {
-        window.location.href = data.checkoutCreate.checkout.webUrl;
-      } else {
-        console.error('Checkout errors:', data.checkoutCreate.checkoutUserErrors);
+    if (!productData.variantId) return;
+    const resultAction = await dispatch(addToCartAsync({ variantId: productData.variantId, quantity: 1 }));
+    if (addToCartAsync.fulfilled.match(resultAction)) {
+      const cart = resultAction.payload;
+      if (cart.checkoutUrl) {
+        window.location.href = cart.checkoutUrl;
       }
-    } catch (error) {
-      console.error('Error creating checkout:', error);
     }
   };
 

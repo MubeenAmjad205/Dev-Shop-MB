@@ -1,0 +1,19 @@
+{
+  "brandName": "Dev Shop MB",
+  "companyName": "Dev Shop MB Inc.",
+  "supportEmail": "support@devshopmb.com",
+  "socialLinks": {
+    "facebook": "https://facebook.com/devshopmb",
+    "twitter": "https://twitter.com/devshopmb",
+    "instagram": "https://instagram.com/devshopmb",
+    "tiktok": ""
+  },
+  "currency": {
+    "code": "PKR",
+    "symbol": "Rs"
+  },
+  "seo": {
+    "defaultTitle": "Dev Shop MB | Kids Toys & Care",
+    "defaultDescription": "Your trusted destination for safe, educational toys and gentle baby care products."
+  }
+}

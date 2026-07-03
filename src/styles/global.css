@@ -8,6 +8,44 @@
   font-family: 'Poppins', sans-serif;
 }
 
+@layer base {
+  :root {
+    --color-primary: 253 85 69; /* Premium Orange/Red */
+    --color-secondary: 255 143 171; /* Soft Pastel Pink */
+    --color-background: 255 255 255;
+    --color-surface: 248 250 252;
+    --color-text: 30 41 59;
+    --color-text-muted: 100 116 139;
+  }
+
+  .dark {
+    --color-primary: 253 85 69; /* Premium Orange/Red */
+    --color-secondary: 255 107 158;
+    --color-background: 15 23 42;
+    --color-surface: 30 41 59;
+    --color-text: 248 250 252;
+    --color-text-muted: 148 163 184;
+  }
+
+  body {
+    @apply bg-background text-textMain transition-colors duration-300;
+  }
+}
+
+@layer utilities {
+  .interactive-card {
+    @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(var(--color-primary),0.3)] bg-surface rounded-3xl border border-transparent dark:border-neutral-800;
+  }
+  
+  .btn-premium {
+    @apply relative overflow-hidden transition-all duration-300 ease-out hover:scale-[1.03] active:scale-95 rounded-full shadow-lg hover:shadow-glow;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  }
+}
+
 .container {
   width: 100%;
   margin-right: auto;

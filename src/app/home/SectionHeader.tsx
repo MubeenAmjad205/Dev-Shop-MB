@@ -1,44 +1,31 @@
-'use client'
+'use client';
+
 import PromoTag from '@/components/PromoTag';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
-import {GET_HOME__HEADER_SECTION} from '@/queries/contentfulQueries';
-import { useQuery } from '@apollo/client';
-import { contentfulClient } from '@/lib/contentfulGraphQL';
-import Loading from '../loading';
+import { headerSection } from '@/data/content';
 import { useRouter } from 'next/navigation';
-
+import Image from 'next/image';
+import airForce1 from '@/images/airForce1.webp';
 
 const SectionHeader = () => {
   const router = useRouter();
-  const { data, loading, error } = useQuery(GET_HOME__HEADER_SECTION, {
-    client: contentfulClient,
-  });
-  const handleViewProduct = ()=>{
+  
+  const handleViewProduct = () => {
     router.push('/products');
   };
 
-if (loading) return <div><Loading /></div>;
-  if (error)
-    return (
-      <div className="text-center text-red-500">
-        Error loading Home Heading: {error.message}
-      </div>
-    );
-  const homeHeading = data?.homeHeaderSectionCollection?.items[0] || {};
-  const {heading, title, description,image } = homeHeading;
-
-
+  const { heading, title, description } = headerSection;
 
   return (
     <div className="container items-stretch gap-y-5 lg:flex lg:gap-5 lg:gap-y-0">
-      <div className="basis-[68%] items-center space-y-10 rounded-2xl bg-gray p-5 md:flex md:space-y-0 ">
-        <div className="basis-[63%]">
-          <h4 className="mb-5 text-xl font-medium text-primary">
+      <div className="basis-[68%] items-center space-y-10 rounded-3xl bg-surface dark:bg-neutral-800 shadow-lg p-8 md:flex md:space-y-0 relative overflow-hidden">
+        <div className="basis-[63%] relative z-10">
+          <h4 className="mb-5 text-xl font-medium text-primary uppercase tracking-wider">
             {title}
           </h4>
           <h1
-            className="text-[50px] font-medium tracking-tight"
-            style={{ lineHeight: '1em' }}
+            className="text-[40px] md:text-[50px] font-bold tracking-tight text-neutral-900 dark:text-white"
+            style={{ lineHeight: '1.1em' }}
           >
             {heading}
           </h1>
@@ -48,7 +35,7 @@ if (loading) return <div><Loading /></div>;
           <ButtonPrimary sizeClass="px-5 py-4" onClick={handleViewProduct}>View Product</ButtonPrimary>
         </div>
         <div className="basis-[37%]">
-          <img src={image?.url||''} alt="shoe box" className="w-full" />
+          <Image src={airForce1} alt="shoe box" className="w-full" />
         </div>
       </div>
 

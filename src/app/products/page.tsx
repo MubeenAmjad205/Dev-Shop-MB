@@ -1,24 +1,37 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React from 'react';
 import ProductCard from '@/components/ProductCard';
 import SidebarFilters from '@/components/SideBarFilter';
-import { getProducts } from '@/queries/shopifyQueries';
+import { getProducts, GET_COLLECTIONS, GET_PRODUCTS_BY_COLLECTION } from '@/queries/shopifyQueries';
 import Shopifyclient from '@/lib/shopifyClient';
-import { GET_PRODUCTS_BY_COLLECTION } from '@/queries/shopifyQueries';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
-import ButtonPrimary from '@/shared/Button/ButtonPrimary';
-import Loading from '../loading';
+import Link from 'next/link';
 
+export const metadata = {
+  title: 'Products | Dev Shop MB',
+  description: 'Browse our latest collection of premium products.',
+};
+
+// Shopify Storefront API uses specific filter structures for collections
 const getProductsByCollection = async (
-  collectionId: string,
-  first: number,
-  after?: string
+  collectionId: string, 
+  first: number, 
+  after?: string, 
+  minPrice?: number, 
+  maxPrice?: number
 ) => {
+  const filters: any[] = [];
+  if ((minPrice && minPrice > 0) || (maxPrice && maxPrice < 2000)) {
+    filters.push({
+      price: {
+        min: minPrice || 0,
+        max: maxPrice || 2000
+      }
+    });
+  }
+
   const response = await Shopifyclient.query({
     query: GET_PRODUCTS_BY_COLLECTION,
-    variables: { collectionId, first, after },
+    variables: { collectionId, first, after, filters },
   });
   if (!response.data.collection) {
     return { edges: [], pageInfo: { hasNextPage: false, endCursor: null } };
@@ -26,150 +39,99 @@ const getProductsByCollection = async (
   return response.data.collection.products;
 };
 
-const ProductsPageContent = () => {
-  const searchParams = useSearchParams();
-  const searchQuery = searchParams.get('search') || '';
+const getCollections = async () => {
+  const response = await Shopifyclient.query({ query: GET_COLLECTIONS });
+  return response.data.collections.edges.map((edge: any) => edge.node);
+};
 
-  const [selectedCollection, setSelectedCollection] = useState('All');
-  const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 0]);
-  const [dynamicPriceRange, setDynamicPriceRange] = useState<[number, number]>([0, 1000]);
-
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const collection = typeof params.collection === 'string' ? params.collection : 'All';
+  const cursor = typeof params.cursor === 'string' ? params.cursor : undefined;
+  const searchQuery = typeof params.search === 'string' ? params.search : '';
+  const minPrice = typeof params.minPrice === 'string' ? Number(params.minPrice) : 0;
+  const maxPrice = typeof params.maxPrice === 'string' ? Number(params.maxPrice) : 2000;
+  
   const itemsPerPage = 12;
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
-  const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const [products, setProducts] = useState<any[]>([]);
-  const [pageInfo, setPageInfo] = useState<{ hasNextPage: boolean; endCursor: string | null }>({
-    hasNextPage: false,
-    endCursor: null,
-  });
-  const [loading, setLoading] = useState(true);
+  // Build the global search query for Shopify
+  const queryParts = [];
+  if (searchQuery) queryParts.push(`title:*${searchQuery}*`);
+  if (minPrice > 0) queryParts.push(`variants.price:>=${minPrice}`);
+  if (maxPrice < 2000) queryParts.push(`variants.price:<=${maxPrice}`);
+  const globalQuery = queryParts.join(' AND ');
 
-  useEffect(() => {
-    setCurrentCursor(undefined);
-    setCursorStack([]);
-    setCurrentPage(1);
-  }, [selectedCollection, searchQuery]);
+  // Run both queries in parallel for performance
+  const [collections, productsResponse] = await Promise.all([
+    getCollections(),
+    collection === 'All' || searchQuery !== '' 
+      // If we are searching, we must use the global getProducts because collection products don't easily support fuzzy text search via filters
+      ? getProducts(itemsPerPage, cursor, globalQuery || undefined) 
+      : getProductsByCollection(collection, itemsPerPage, cursor, minPrice, maxPrice)
+  ]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        let response;
-        if (selectedCollection === 'All') {
-          response = await getProducts(itemsPerPage, currentCursor);
-        } else {
-          response = await getProductsByCollection(selectedCollection, itemsPerPage, currentCursor);
-        }
-        const safePageInfo = response.pageInfo || { hasNextPage: false, endCursor: null };
+  const safePageInfo = productsResponse.pageInfo || { hasNextPage: false, endCursor: null };
+  const edges = productsResponse.edges || [];
 
-        const mappedProducts = response.edges.map((edge: any) => ({
-          id: edge.node.id,
-          handle: edge.node.handle,
-          title: edge.node.title,
-          slug: edge.node.handle,
-          shoeName: edge.node.title,
-          description: edge.node.description,
-          image: edge.node.images?.edges[0]?.node.url,
-          price: Number(edge.node.variants?.edges[0]?.node.price.amount),
-          variantId: edge.node.variants?.edges[0]?.node.id || null,
-        }));
+  const mappedProducts = edges.map((edge: any) => ({
+    id: edge.node.id,
+    handle: edge.node.handle,
+    title: edge.node.title,
+    slug: edge.node.handle,
+    shoeName: edge.node.title,
+    description: edge.node.description,
+    image: edge.node.images?.edges[0]?.node.url,
+    price: Number(edge.node.variants?.edges[0]?.node.price.amount),
+    variantId: edge.node.variants?.edges[0]?.node.id || null,
+  }));
 
-        if (mappedProducts.length > 0) {
-          const prices = mappedProducts.map((p: any) => p.price);
-          const minPrice = Math.min(...prices);
-          const maxPrice = Math.max(...prices);
-          setDynamicPriceRange([minPrice, maxPrice]);
-          if (selectedPriceRange[0] === 0 && selectedPriceRange[1] === 0) {
-            setSelectedPriceRange([minPrice, maxPrice]);
-          }
-        }
-        let filteredProducts = mappedProducts.filter(
-          (product: any) =>
-            product.price >= selectedPriceRange[0] &&
-            product.price <= selectedPriceRange[1]
-        );
-        if (searchQuery) {
-          filteredProducts = filteredProducts.filter((product: any) =>
-            product.title.toLowerCase().includes(searchQuery.toLowerCase())
-          );
-        }
-        setProducts(filteredProducts);
-        setPageInfo(safePageInfo);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, [selectedCollection, selectedPriceRange, searchQuery, currentCursor]);
-
-  const handleNextPage = () => {
-    if (pageInfo?.hasNextPage && pageInfo.endCursor) {
-      setCursorStack([...cursorStack, currentCursor]);
-      setCurrentCursor(pageInfo.endCursor);
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      const newStack = [...cursorStack];
-      const prevCursor = newStack.pop() || undefined;
-      setCursorStack(newStack);
-      setCurrentCursor(prevCursor);
-      setCurrentPage(currentPage - 1);
-    }
+  // Generate pagination query
+  const createQueryString = (name: string, value: string) => {
+    const params2 = new URLSearchParams();
+    if (collection !== 'All') params2.set('collection', collection);
+    if (searchQuery) params2.set('search', searchQuery);
+    if (minPrice > 0) params2.set('minPrice', minPrice.toString());
+    if (maxPrice < 2000) params2.set('maxPrice', maxPrice.toString());
+    params2.set(name, value);
+    return params2.toString();
   };
 
   return (
     <div className="container relative flex flex-col lg:flex-row" id="body">
       <div className="pr-4 pt-10 lg:basis-1/3 xl:basis-1/4">
-        <SidebarFilters
-          selectedCollection={selectedCollection}
-          onSelectCollection={setSelectedCollection}
-          priceRange={selectedPriceRange}
-          onPriceRangeChange={(range) => setSelectedPriceRange(range)}
-          dynamicPriceRange={dynamicPriceRange}
+        <SidebarFilters 
+          collections={collections}
+          selectedCollection={collection}
+          initialPriceRange={[minPrice, maxPrice]}
         />
       </div>
       <div className="mb-10 shrink-0 border-t lg:mx-4 lg:mb-0 lg:border-t-0" />
-      <div className="relative flex-1">
-        {loading ? (
-          <div><Loading/></div>
-        ) : (
-          <>
-            <div className="grid flex-1 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
-              {products.map((product: any) => (
-                <ProductCard product={product} key={product.id} />
-              ))}
+      <div className="relative flex-1 py-10">
+        <div className="grid flex-1 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
+          {mappedProducts.map((product: any) => (
+            <ProductCard product={product} key={product.id} />
+          ))}
+          {mappedProducts.length === 0 && (
+            <div className="col-span-full py-10 text-center text-gray-500">
+              No products found matching your criteria.
             </div>
-            <div className="my-8 flex items-center justify-center space-x-4">
-              <ButtonSecondary
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-                className={`px-6 py-2 rounded-full shadow-md ${currentPage <= 1? 'opacity-50 cursor-not-allowed' : null}`}
-              >
-                Previous
+          )}
+        </div>
+        
+        <div className="my-8 flex items-center justify-center space-x-4">
+          {safePageInfo.hasNextPage && (
+            <Link href={`/products?${createQueryString('cursor', safePageInfo.endCursor)}`} scroll={true}>
+              <ButtonSecondary className="px-6 py-2 rounded-full shadow-md hover:bg-gray-100 transition-all">
+                Load More Products
               </ButtonSecondary>
-              <ButtonPrimary disabled className="px-6 py-2 rounded-full shadow-md">
-                {currentPage}
-              </ButtonPrimary>
-              <ButtonSecondary
-                onClick={handleNextPage}
-                disabled={!pageInfo?.hasNextPage}
-                className={`px-6 py-2 rounded-full shadow-md ${!pageInfo?.hasNextPage ? 'opacity-50 cursor-not-allowed' : null}`}
-              >
-                Next
-              </ButtonSecondary>
-            </div>
-          </>
-        )}
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );
-};
-
-export default ProductsPageContent;
+}

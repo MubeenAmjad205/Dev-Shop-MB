@@ -7,6 +7,7 @@ import Input from '@/shared/Input/Input';
 import Logo from '@/shared/Logo/Logo';
 import CartSideBar from '../CartSideBar';
 import MenuBar from './MenuBar';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const MainNav = () => {
   const router = useRouter();
@@ -33,8 +34,8 @@ const MainNav = () => {
           <Input
             type="text"
             onChange={handleSearchChange}
-            className="border-transparent bg-white placeholder:text-neutral-500 focus:border-transparent"
-            placeholder="try 'Nike Air Jordan'"
+            className="border-transparent bg-transparent placeholder:text-neutral-500 focus:border-transparent dark:text-neutral-100"
+            placeholder="Search toys, care products..."
           />
           <RiSearch2Line className="text-2xl text-neutral-500" />
         </div>
@@ -42,9 +43,9 @@ const MainNav = () => {
 
       <div className="flex flex-1 items-center justify-end gap-5">
         
-        <div className="flex items-center divide-x divide-neutral-300">
+        <div className="flex items-center divide-x divide-neutral-300 dark:divide-neutral-700">
+          <ThemeToggle />
           <CartSideBar />
-  
         </div>
       </div>
     </div>

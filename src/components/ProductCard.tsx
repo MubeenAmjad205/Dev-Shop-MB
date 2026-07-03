@@ -23,15 +23,15 @@ const ProductCard: FC<ProductCardProps> = ({
 
   return (
     <div
-      className={`transitionEffect relative rounded-2xl p-3 shadow-md ${className}`}
+      className={`interactive-card relative p-3 bg-white dark:bg-neutral-800 ${className}`}
     >
       <div className="h-[250px] w-full overflow-hidden rounded-2xl lg:h-[220px] 2xl:h-[300px]">
         {product.justIn && (
-          <div className="absolute left-6 top-0 rounded-b-lg bg-primary px-3 py-2 text-sm uppercase text-white shadow-md">
-            Just In!
+          <div className="absolute left-4 top-0 rounded-b-xl bg-gradient-to-r from-secondary to-primary px-3 py-1.5 text-xs font-semibold uppercase text-white shadow-lg">
+            New Arrival
           </div>
         )}
-        <LikeButton className="absolute right-2 top-2" />
+        <LikeButton className="absolute right-2 top-2 z-10" />
         <Link
           className="h-[250px] w-full lg:h-[220px]"
           href={`/products/${product.handle}`}
@@ -45,8 +45,8 @@ const ProductCard: FC<ProductCardProps> = ({
         </Link>
       </div>
       <div className="mt-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">{product.title}</h3>
+        <div className="flex items-start justify-between">
+          <h3 className="font-semibold line-clamp-2 pr-4">{product.title}</h3>
           <p
             className={`text-neutral-500 ${
               showPrevPrice ? 'block' : 'hidden'
