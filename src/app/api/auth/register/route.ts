@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       const expiresAt = loginPayload.customerAccessToken.expiresAt;
 
       // Set HttpOnly cookie
-      cookies().set({
+      ;(await cookies()).set({
         name: 'customerAccessToken',
         value: token,
         httpOnly: true,

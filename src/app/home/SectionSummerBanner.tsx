@@ -1,41 +1,84 @@
+'use client';
+
 import React from 'react';
+import Image from 'next/image';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
+import { motion } from 'framer-motion';
+import { slideLeft, slideRight, fadeUp } from '@/shared/utils/animations';
+import { bannerImages } from '@/shared/constants/images';
 
 const SectionSummerBanner = () => {
   return (
-    <div className="container py-8">
-      <div className="relative rounded-[3rem] overflow-hidden bg-gradient-to-r from-blue-400 to-cyan-300 p-10 md:p-16 flex flex-col md:flex-row items-center justify-between shadow-lg border border-transparent dark:border-neutral-800">
-        
-        {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-300 rounded-full mix-blend-overlay filter blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-10 w-48 h-48 bg-white rounded-full mix-blend-overlay filter blur-2xl opacity-30"></div>
+    <div className="container py-10">
+      <div className="relative rounded-[3rem] overflow-hidden shadow-2xl min-h-[420px] flex items-center">
+        {/* Background image */}
+        <Image
+          src={bannerImages.summer}
+          alt="Summer Sale Banner"
+          fill
+          className="object-cover"
+          quality={90}
+          sizes="100vw"
+          priority
+        />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-sky-600/90 via-cyan-500/80 to-blue-400/60" />
 
-        <div className="relative z-10 md:w-1/2 text-white space-y-6 text-center md:text-left">
-          <div className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-bold uppercase tracking-wider">
-            ☀️ Limited Time Only
-          </div>
-          <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-md">
-            Summer Starts <br/> Here!
-          </h2>
-          <p className="text-xl text-blue-50 drop-shadow-sm font-medium">
-            Get ready for outdoor fun. Save up to 50% on all water toys and backyard playsets.
-          </p>
-          <div className="pt-4">
-            <ButtonPrimary sizeClass="px-8 py-4 bg-white text-blue-500 hover:bg-neutral-100 shadow-xl rounded-full">
-              Shop Summer Sale
-            </ButtonPrimary>
-          </div>
+        {/* Content */}
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full px-8 md:px-16 py-12 gap-8">
+          <motion.div
+            className="text-white space-y-5 md:max-w-xl"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={slideLeft}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">☀️</span>
+              <div className="bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-full px-4 py-1.5 text-sm font-bold uppercase tracking-widest">
+                Limited Time Sale
+              </div>
+            </div>
+            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg leading-tight">
+              Summer Starts<br />Here!
+            </h2>
+            <p className="text-xl text-blue-50 font-medium drop-shadow">
+              Save up to <span className="font-extrabold text-yellow-300">50% off</span> on outdoor water toys, pools, and summer playsets.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <ButtonPrimary sizeClass="px-8 py-4 bg-white text-sky-600 hover:bg-neutral-100 rounded-full shadow-xl text-base font-bold">
+                Shop Summer Sale
+              </ButtonPrimary>
+              <button className="px-6 py-4 rounded-full border-2 border-white/50 text-white font-bold hover:bg-white/10 transition-colors">
+                View Deals →
+              </button>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="flex gap-4"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={slideRight}
+          >
+            {[
+              { emoji: '🏖️', label: 'Beach Toys', delay: 0 },
+              { emoji: '💦', label: 'Water Guns', delay: 0.3 },
+              { emoji: '🌞', label: 'Outdoor Fun', delay: 0.6 },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-5 text-center text-white shadow-lg"
+                animate={{ y: [0, i % 2 === 0 ? -12 : 12, 0] }}
+                transition={{ repeat: Infinity, duration: 3 + i * 0.5, ease: 'easeInOut' }}
+              >
+                <div className="text-5xl mb-2">{item.emoji}</div>
+                <p className="text-sm font-bold">{item.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-
-        <div className="relative z-10 mt-10 md:mt-0 w-full md:w-1/2 flex justify-center">
-           {/* Abstract shapes representing summer toys (beach ball, sun) */}
-           <div className="relative w-64 h-64">
-              <div className="absolute top-0 right-10 text-8xl drop-shadow-2xl animate-spin-slow">🏖️</div>
-              <div className="absolute bottom-10 left-10 text-8xl drop-shadow-2xl animate-bounce">🌞</div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-9xl drop-shadow-2xl z-20">🔫</div>
-           </div>
-        </div>
-
       </div>
     </div>
   );
