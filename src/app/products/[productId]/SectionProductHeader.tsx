@@ -16,6 +16,7 @@ import Heading from '@/shared/Heading/Heading';
 import { addToCartAsync } from '@/store/slices/cartSlice';
 import { useAppDispatch } from '@/store/hooks';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 
 interface SectionProductHeaderProps {
   shots: StaticImageData[];
@@ -41,35 +42,40 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
   reviews,
 }) => {
   const dispatch = useAppDispatch();
+  const requireAuth = useRequireAuth();
 
   const handleAddToCart = async () => {
-    if (!productData.variantId) {
-      toast.error('Product variant not available');
-      return;
-    }
-    const toastId = toast.loading('Adding to cart...');
-    const resultAction = await dispatch(
-      addToCartAsync({
-        variantId: productData.variantId,
-        quantity: 1,
-      })
-    );
-    if (addToCartAsync.fulfilled.match(resultAction)) {
-      toast.success('Added to cart successfully!', { id: toastId });
-    } else {
-      toast.error('Failed to add to cart', { id: toastId });
-    }
+    requireAuth(async () => {
+      if (!productData.variantId) {
+        toast.error('Product variant not available');
+        return;
+      }
+      const toastId = toast.loading('Adding to cart...');
+      const resultAction = await dispatch(
+        addToCartAsync({
+          variantId: productData.variantId,
+          quantity: 1,
+        })
+      );
+      if (addToCartAsync.fulfilled.match(resultAction)) {
+        toast.success('Added to cart successfully!', { id: toastId });
+      } else {
+        toast.error('Failed to add to cart', { id: toastId });
+      }
+    });
   };
 
   const handleBuyNow = async () => {
-    if (!productData.variantId) return;
-    const resultAction = await dispatch(addToCartAsync({ variantId: productData.variantId, quantity: 1 }));
-    if (addToCartAsync.fulfilled.match(resultAction)) {
-      const cart = resultAction.payload;
-      if (cart.checkoutUrl) {
-        window.location.href = cart.checkoutUrl;
+    requireAuth(async () => {
+      if (!productData.variantId) return;
+      const resultAction = await dispatch(addToCartAsync({ variantId: productData.variantId, quantity: 1 }));
+      if (addToCartAsync.fulfilled.match(resultAction)) {
+        const cart = resultAction.payload;
+        if (cart.checkoutUrl) {
+          window.location.href = cart.checkoutUrl;
+        }
       }
-    }
+    });
   };
 
   return (

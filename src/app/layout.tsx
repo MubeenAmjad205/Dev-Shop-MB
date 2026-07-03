@@ -13,6 +13,7 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from 'react-hot-toast';
 import QueryProvider from '@/providers/QueryProvider';
 import ReduxProvider from '@/providers/ReduxProvider';
+import LoginModal from '@/components/LoginModal';
 
 import globalConfig from '@/core/config/global.json';
 
@@ -56,6 +57,7 @@ export default function RootLayout({
                 <Suspense fallback={<Loading />}>{children}</Suspense>
                 <Footer />
                 <Toaster position="bottom-right" toastOptions={{ className: 'dark:bg-neutral-800 dark:text-white' }} />
+                <LoginModal />
               </NuqsAdapter>
             </QueryProvider>
           </ReduxProvider>

@@ -1,10 +1,12 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import cartReducer, { CartState } from './slices/cartSlice';
 import wishlistReducer, { WishlistState } from './slices/wishlistSlice';
+import authModalReducer from './slices/authModalSlice';
 
 const rootReducer = combineReducers({
   cart: cartReducer,
   wishlist: wishlistReducer,
+  authModal: authModalReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
