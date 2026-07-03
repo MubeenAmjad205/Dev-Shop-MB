@@ -75,7 +75,7 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
   return (
     <div className="items-stretch justify-between space-y-10 lg:flex lg:space-y-0">
       <div className="basis-[50%]">
-        <ImageShowCase shots={shots} />
+        <ImageShowCase shots={shots} productId={productData.id} />
       </div>
 
       <div className="basis-[45%]">

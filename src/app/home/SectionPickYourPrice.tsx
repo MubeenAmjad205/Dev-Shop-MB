@@ -82,9 +82,17 @@ const SectionPickYourPrice = () => {
             <Link href={range.href} className="block group h-full">
               <div className={`relative h-72 rounded-[2rem] overflow-hidden bg-gradient-to-br ${range.bgFrom} ${range.bgTo} shadow-lg transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl`}>
                 
-                {/* Decorative subtle gradient orb instead of an image */}
-                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-black/5 rounded-full blur-3xl" />
+                {/* Background Image blended with gradient */}
+                <Image
+                  src={range.image}
+                  alt={range.label}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  className="object-cover opacity-40 mix-blend-overlay group-hover:scale-110 group-hover:opacity-50 transition-all duration-700"
+                />
+                
+                {/* Decorative subtle gradient orb */}
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/20 rounded-full blur-3xl mix-blend-overlay" />
 
                 {/* Price tag */}
                 <div className="absolute top-5 left-5 z-10">

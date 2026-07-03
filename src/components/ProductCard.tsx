@@ -31,7 +31,7 @@ const ProductCard: FC<ProductCardProps> = ({
             New Arrival
           </div>
         )}
-        <LikeButton className="absolute right-2 top-2 z-10" />
+        <LikeButton productId={product.id || product.handle} className="absolute right-3 top-3 z-10" />
         <Link
           className="h-[250px] w-full lg:h-[220px]"
           href={`/products/${product.handle}`}

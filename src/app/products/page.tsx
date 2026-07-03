@@ -116,8 +116,19 @@ export default async function ProductsPage({
             <ProductCard product={product} key={product.id} />
           ))}
           {mappedProducts.length === 0 && (
-            <div className="col-span-full py-10 text-center text-gray-500">
-              No products found matching your criteria.
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+              <div className="bg-neutral-100 dark:bg-neutral-800 rounded-full p-6 mb-4">
+                <svg className="w-10 h-10 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold mb-2">No products found</h3>
+              <p className="text-neutral-500 dark:text-neutral-400 max-w-sm mb-6">
+                We couldn't find anything matching your current filters. Try adjusting your search criteria.
+              </p>
+              <Link href="/products" className="text-primary font-medium hover:underline">
+                Clear all filters
+              </Link>
             </div>
           )}
         </div>

@@ -18,11 +18,11 @@ export function ThemeToggle() {
   }
 
   return (
-    <ButtonCircle3
+    <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="w-10 h-10 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-700"
+      className="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors focus:outline-none"
     >
       {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-    </ButtonCircle3>
+    </button>
   );
 }

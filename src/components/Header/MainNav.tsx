@@ -27,24 +27,24 @@ const MainNav = () => {
       <div className="flex-1 lg:hidden">
         <MenuBar />
       </div>
-      <div className="flex items-center gap-5 lg:basis-3/5">
+      <div className="flex items-center gap-4 lg:gap-8 lg:basis-2/3">
         <Logo />
         {/* Show search input on larger screens */}
-        <div className="hidden w-full max-w-2xl items-center gap-5 rounded-full border border-neutral-300 py-1 pr-3 lg:flex">
-          <Input
+        <div className="hidden w-full max-w-xl items-center gap-3 rounded-full bg-neutral-100 dark:bg-neutral-800/80 px-5 py-2.5 lg:flex border border-transparent focus-within:border-primary/20 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+          <RiSearch2Line className="text-xl text-neutral-400" />
+          <input
             type="text"
             onChange={handleSearchChange}
-            className="border-transparent bg-transparent placeholder:text-neutral-500 focus:border-transparent dark:text-neutral-100"
+            className="w-full bg-transparent border-none outline-none focus:ring-0 p-0 text-sm placeholder:text-neutral-500 text-neutral-900 dark:text-neutral-100"
             placeholder="Search toys, care products..."
           />
-          <RiSearch2Line className="text-2xl text-neutral-500" />
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-end gap-5">
-        
-        <div className="flex items-center divide-x divide-neutral-300 dark:divide-neutral-700">
+      <div className="flex flex-1 items-center justify-end gap-3 sm:gap-4">
+        <div className="flex items-center gap-3">
           <ThemeToggle />
+          <div className="h-6 w-[1px] bg-neutral-300 dark:bg-neutral-700 hidden sm:block"></div>
           <CartSideBar />
         </div>
       </div>
