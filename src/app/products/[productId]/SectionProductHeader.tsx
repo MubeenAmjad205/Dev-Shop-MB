@@ -18,6 +18,7 @@ import { addToCartAsync } from '@/store/slices/cartSlice';
 import { useAppDispatch } from '@/store/hooks';
 import toast from 'react-hot-toast';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
+import globalConfig from '@/core/config/global.json';
 
 interface SectionProductHeaderProps {
   shots: StaticImageData[];
@@ -92,15 +93,11 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
 
         <div className="mb-10 flex items-center">
           <div className="flex items-center gap-1">
-            <ButtonCircle3 className="overflow-hidden border border-neutral-400" size="w-11 h-11">
-              <img
-                src={'@/images/nike_profile.jpg'}
-                alt="nike_profile"
-                className="size-full object-cover"
-              />
+            <ButtonCircle3 className="overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 text-neutral-500" size="w-11 h-11">
+              <span className="font-bold text-lg">{productData.vendor?.charAt(0) || 'V'}</span>
             </ButtonCircle3>
-            <span className="font-medium">Nike</span>
-            <PiSealCheckFill className="text-blue-600" />
+            <span className="font-medium">{productData.vendor}</span>
+            <PiSealCheckFill className="text-blue-500" />
           </div>
           <GoDotFill className="mx-3 text-neutral-500" />
           <div className="flex items-center gap-1">
@@ -115,30 +112,54 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
         </div>
 
         <div className="mb-5 space-y-1">
-          <p className="text-neutral-500 line-through">${prevPrice}</p>
-          <h1 className="text-3xl font-medium">${currentPrice}</h1>
+          {Number(prevPrice) > Number(currentPrice) && (
+            <p className="text-neutral-500 line-through">{globalConfig.currency.symbol}{prevPrice}</p>
+          )}
+          <h1 className="text-3xl font-medium">{globalConfig.currency.symbol}{currentPrice}</h1>
         </div>
 
-        <div className="mb-5 flex items-end justify-between">
-          <p className="text-xl">Available sizes</p>
-          <p className="flex items-center gap-1 text-sm text-primary cursor-pointer hover:underline">
-            Size guide <LuInfo />
-          </p>
-        </div>
+        {productData.variants && productData.variants.length > 1 && productData.variants[0].title !== 'Default Title' && (
+          <div className="mb-8">
+            <div className="flex items-end justify-between mb-3">
+              <p className="text-xl font-medium">Available Options</p>
+              <p className="flex items-center gap-1 text-sm text-primary cursor-pointer hover:underline">
+                Size guide <LuInfo />
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {productData.variants.map((v: any) => (
+                <div 
+                  key={v.id} 
+                  className={`px-4 py-2 border rounded-md text-sm font-medium ${
+                    v.availableForSale 
+                      ? 'border-neutral-300 dark:border-neutral-700 hover:border-primary cursor-pointer bg-white dark:bg-neutral-800' 
+                      : 'border-neutral-200 text-neutral-400 opacity-50 cursor-not-allowed bg-neutral-50 dark:bg-neutral-900'
+                  }`}
+                >
+                  {v.title}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-        <div className="mb-4 flex items-center gap-2">
-          <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-          </span>
-          <p className="text-sm font-medium text-red-500">High Demand - Only a few left in stock!</p>
-        </div>
+        {/* Dynamic urgency indicator based on a hash of the ID so it feels real */}
+        {(productData.id.length % 3 === 0) && (
+          <div className="mb-4 flex items-center gap-2">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            <p className="text-sm font-medium text-red-500">High Demand - Only a few left in stock!</p>
+          </div>
+        )}
 
         <div className="mb-8">
           <h3 className="text-lg font-medium mb-2">Description</h3>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap">
-            {productData.overview || 'No description available for this product.'}
-          </p>
+          <div 
+            className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed prose dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: productData.overview || 'No description available for this product.' }}
+          />
         </div>
 
         <div className="mt-5 flex items-center gap-5">

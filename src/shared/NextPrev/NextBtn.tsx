@@ -8,7 +8,7 @@ const NextBtn: FC<Props> = ({ className = 'w-10 h-10 text-lg', ...args }) => {
   return (
     <button
       type="button"
-      className={`NextBtn ${className} inline-flex items-center justify-center rounded-full border border-neutral-200 bg-white hover:border-neutral-300`}
+      className={`NextBtn ${className} inline-flex items-center justify-center rounded-full border border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-neutral-600 dark:text-neutral-100 shadow-sm`}
       {...args}
     >
       <MdKeyboardArrowRight className="text-2xl" />
