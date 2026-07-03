@@ -9,6 +9,7 @@ import { LuInfo } from 'react-icons/lu';
 import { MdStar } from 'react-icons/md';
 import { PiSealCheckFill } from 'react-icons/pi';
 import ImageShowCase from '@/components/ImageShowCase';
+import Accordion from '@/components/Accordion';
 import ButtonCircle3 from '@/shared/Button/ButtonCircle3';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import ButtonSecondary from '@/shared/Button/ButtonSecondary';
@@ -120,12 +121,25 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
 
         <div className="mb-5 flex items-end justify-between">
           <p className="text-xl">Available sizes</p>
-          <p className="flex items-center gap-1 text-sm text-neutral-500">
+          <p className="flex items-center gap-1 text-sm text-primary cursor-pointer hover:underline">
             Size guide <LuInfo />
           </p>
         </div>
 
-      
+        <div className="mb-4 flex items-center gap-2">
+          <span className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+          </span>
+          <p className="text-sm font-medium text-red-500">High Demand - Only a few left in stock!</p>
+        </div>
+
+        <div className="mb-8">
+          <h3 className="text-lg font-medium mb-2">Description</h3>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap">
+            {productData.overview || 'No description available for this product.'}
+          </p>
+        </div>
 
         <div className="mt-5 flex items-center gap-5">
           <ButtonPrimary onClick={handleBuyNow} className="w-full">
@@ -137,6 +151,31 @@ const SectionProductHeader: FC<SectionProductHeaderProps> = ({
           >
             <BsBag /> Add to cart
           </ButtonSecondary>
+        </div>
+
+        <div className="mt-5 flex items-center justify-center gap-3 text-neutral-400 dark:text-neutral-500 bg-neutral-50 dark:bg-neutral-800/50 py-3 rounded-lg border border-neutral-100 dark:border-neutral-800">
+          <span className="text-xs font-medium">Guaranteed Safe Checkout:</span>
+          <div className="flex gap-2">
+            <div className="bg-white dark:bg-neutral-700 shadow-sm px-2 py-0.5 rounded text-[10px] font-bold border border-neutral-200 dark:border-neutral-600">VISA</div>
+            <div className="bg-white dark:bg-neutral-700 shadow-sm px-2 py-0.5 rounded text-[10px] font-bold border border-neutral-200 dark:border-neutral-600">MC</div>
+            <div className="bg-white dark:bg-neutral-700 shadow-sm px-2 py-0.5 rounded text-[10px] font-bold border border-neutral-200 dark:border-neutral-600">PAYPAL</div>
+            <div className="bg-white dark:bg-neutral-700 shadow-sm px-2 py-0.5 rounded text-[10px] font-bold border border-neutral-200 dark:border-neutral-600">APPLE PAY</div>
+          </div>
+        </div>
+
+        <div className="mt-8 space-y-3 pt-6">
+          <Accordion 
+            small 
+            wfull 
+            question={<span className="font-medium">Shipping & Returns</span>} 
+            answer={<p className="leading-relaxed">Free standard shipping and free 60-day returns for members. Return policy exclusions apply.</p>}
+          />
+          <Accordion 
+            small 
+            wfull 
+            question={<span className="font-medium">Safety & Materials</span>} 
+            answer={<p className="leading-relaxed">All our products undergo rigorous safety testing. BPA-free, non-toxic, and crafted with child-safe materials.</p>}
+          />
         </div>
       </div>
     </div>
