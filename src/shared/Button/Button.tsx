@@ -13,6 +13,7 @@ export interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   type?: ButtonHTMLAttributes<HTMLButtonElement>['type'];
+  form?: string;
   href?: Route;
   onClick?: () => void;
   children?: React.ReactNode;
@@ -27,6 +28,7 @@ const Button: FC<ButtonProps> = ({
   href,
   children,
   type,
+  form,
   loading,
   onClick = () => {},
 }) => {
@@ -72,6 +74,7 @@ const Button: FC<ButtonProps> = ({
       onClick={onClick}
       /* eslint-disable-next-line react/button-has-type */
       type={type}
+      form={form}
     >
       {loading && renderLoading()}
       {children || `This is Button`}

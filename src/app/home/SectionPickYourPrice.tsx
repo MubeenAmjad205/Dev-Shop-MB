@@ -6,43 +6,46 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { staggerContainer, fadeUp, scaleUp } from '@/shared/utils/animations';
 import { priceRangeImages } from '@/shared/constants/images';
+import config from '@/core/config/global.json';
+
+const currency = config.currency.symbol;
 
 const priceRanges = [
   {
-    label: 'Under $20',
+    label: `Under ${currency} 2,000`,
     description: 'Everyday fun & pocket-friendly surprises',
     image: priceRangeImages.under20,
     bgFrom: 'from-[#419ffd]',
     bgTo: 'to-[#2b7dfb]',
     emoji: '💙',
-    href: '/products?maxPrice=20',
+    href: '/products?maxPrice=2000',
   },
   {
-    label: 'Under $50',
+    label: `Under ${currency} 5,000`,
     description: 'Perfect gifts that kids will love',
     image: priceRangeImages.under50,
     bgFrom: 'from-[#eb6bf8]',
     bgTo: 'to-[#f84fa3]',
     emoji: '🎀',
-    href: '/products?maxPrice=50',
+    href: '/products?maxPrice=5000',
   },
   {
-    label: 'Under $100',
+    label: `Under ${currency} 10,000`,
     description: 'Premium sets & unforgettable playsets',
     image: priceRangeImages.under100,
     bgFrom: 'from-[#55e3a8]',
     bgTo: 'to-[#24c1a5]',
     emoji: '🌟',
-    href: '/products?maxPrice=100',
+    href: '/products?maxPrice=10000',
   },
   {
-    label: 'Over $100',
+    label: `Over ${currency} 10,000`,
     description: 'The ultimate luxury experience for kids',
     image: priceRangeImages.over100,
     bgFrom: 'from-[#ff854a]',
     bgTo: 'to-[#ff4c3b]',
     emoji: '👑',
-    href: '/products?minPrice=100',
+    href: '/products?minPrice=10000',
   },
 ];
 
