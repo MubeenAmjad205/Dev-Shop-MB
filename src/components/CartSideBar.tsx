@@ -202,22 +202,14 @@ const CartSideBar: React.FC<CartSideBarProps> = () => {
       <button
         type="button"
         onClick={handleOpenMenu}
-        className="mx-5 flex items-center gap-1 rounded-full bg-neutral-100 p-2 text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+        className="flex items-center gap-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors px-4 py-2 text-primary focus:outline-none"
       >
-        <FaBagShopping className="text-2xl" />
-        <span className="text-sm lg:block">{totalItems} items</span>
+        <FaBagShopping className="text-xl" />
+        <span className="text-sm font-bold tracking-wide lg:block">{totalItems} items</span>
       </button>
       {renderContent()}
     </>
   );
 };
 
-const CartSideBarWithRedux: React.FC = () => {
-  return (
-    <Provider store={store}>
-      <CartSideBar />
-    </Provider>
-  );
-};
-
-export default CartSideBarWithRedux;
+export default CartSideBar;

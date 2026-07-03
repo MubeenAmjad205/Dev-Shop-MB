@@ -10,19 +10,20 @@ import LikeButton from './LikeButton';
 
 interface ImageShowCaseProps {
   shots: StaticImageData[];
+  productId: string;
 }
 
 // interface Shot {
 //   url: string;
 // }
 
-const ImageShowCase: FC<ImageShowCaseProps> = ({ shots }:any) => {
+const ImageShowCase: FC<ImageShowCaseProps> = ({ shots, productId }:any) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   return (
     <div className="space-y-3 rounded-2xl border border-neutral-300 p-2">
       <div className="relative overflow-hidden rounded-2xl md:h-[520px]">
-        <LikeButton className="absolute right-5 top-5" />
+        <LikeButton productId={productId} className="absolute right-5 top-5 z-10" />
         <img
           // src={pathOr('', [activeImageIndex], shots)}
           src={shots[activeImageIndex]?.url}

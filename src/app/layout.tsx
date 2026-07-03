@@ -12,6 +12,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from 'react-hot-toast';
 import QueryProvider from '@/providers/QueryProvider';
+import ReduxProvider from '@/providers/ReduxProvider';
 
 import globalConfig from '@/core/config/global.json';
 
@@ -47,15 +48,17 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 transition-colors duration-300">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <QueryProvider>
-            <NuqsAdapter>
-              <Header />
-              <Breadcrumb />
-              <Suspense fallback={<Loading />}>{children}</Suspense>
-              <Footer />
-              <Toaster position="bottom-right" toastOptions={{ className: 'dark:bg-neutral-800 dark:text-white' }} />
-            </NuqsAdapter>
-          </QueryProvider>
+          <ReduxProvider>
+            <QueryProvider>
+              <NuqsAdapter>
+                <Header />
+                <Breadcrumb />
+                <Suspense fallback={<Loading />}>{children}</Suspense>
+                <Footer />
+                <Toaster position="bottom-right" toastOptions={{ className: 'dark:bg-neutral-800 dark:text-white' }} />
+              </NuqsAdapter>
+            </QueryProvider>
+          </ReduxProvider>
         </ThemeProvider>
       </body>
     </html>

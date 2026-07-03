@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import ButtonPrimary from '@/shared/Button/ButtonPrimary';
+import Button from '@/shared/Button/Button';
 import { motion } from 'framer-motion';
 import { slideLeft, slideRight, fadeUp } from '@/shared/utils/animations';
 import { bannerImages } from '@/shared/constants/images';
@@ -46,9 +46,9 @@ const SectionSummerBanner = () => {
               Save up to <span className="font-extrabold text-yellow-300">50% off</span> on outdoor water toys, pools, and summer playsets.
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
-              <ButtonPrimary sizeClass="px-8 py-4 bg-white text-sky-600 hover:bg-neutral-100 rounded-full shadow-xl text-base font-bold">
+              <Button sizeClass="px-8 py-4" className="bg-white text-sky-600 hover:bg-neutral-100 rounded-full shadow-xl text-base font-bold">
                 Shop Summer Sale
-              </ButtonPrimary>
+              </Button>
               <button className="px-6 py-4 rounded-full border-2 border-white/50 text-white font-bold hover:bg-white/10 transition-colors">
                 View Deals →
               </button>

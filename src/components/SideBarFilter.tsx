@@ -5,6 +5,9 @@ import Slider from 'rc-slider';
 import React, { useState } from 'react';
 import Heading from '@/shared/Heading/Heading';
 import { useQueryState, parseAsString, parseAsInteger } from 'nuqs';
+import config from '@/core/config/global.json';
+
+const currency = config.currency.symbol;
 
 interface Collection {
   id: string;
@@ -20,11 +23,11 @@ const SidebarFilters: React.FC<{
   selectedCollection,
   initialPriceRange,
 }) => {
-  // Using nuqs for highly optimized, type-safe URL state syncing without full page reloads
-  const [collectionParam, setCollectionParam] = useQueryState('collection', parseAsString.withDefault('All'));
-  const [minPriceParam, setMinPriceParam] = useQueryState('minPrice', parseAsInteger.withDefault(0));
-  const [maxPriceParam, setMaxPriceParam] = useQueryState('maxPrice', parseAsInteger.withDefault(2000));
-  const [, setCursorParam] = useQueryState('cursor'); // Just to clear it
+  // Using nuqs for type-safe URL state syncing. We use { shallow: false } so that Next.js Server Components automatically refetch when filters change.
+  const [collectionParam, setCollectionParam] = useQueryState('collection', parseAsString.withDefault('All').withOptions({ shallow: false }));
+  const [minPriceParam, setMinPriceParam] = useQueryState('minPrice', parseAsInteger.withDefault(0).withOptions({ shallow: false }));
+  const [maxPriceParam, setMaxPriceParam] = useQueryState('maxPrice', parseAsInteger.withDefault(2000).withOptions({ shallow: false }));
+  const [, setCursorParam] = useQueryState('cursor', parseAsString.withOptions({ shallow: false }));
 
   const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
   const dynamicPriceRange = [0, 2000];
@@ -54,8 +57,10 @@ const SidebarFilters: React.FC<{
             key="all-collections"
             type="button"
             onClick={() => handleCollectionSelect('All')}
-            className={`px-4 py-2 rounded whitespace-nowrap ${
-              selectedCollection === 'All' ? 'bg-primary text-white' : 'bg-gray'
+            className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors ${
+              selectedCollection === 'All' 
+                ? 'bg-primary text-white shadow-md' 
+                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
             }`}
           >
             All
@@ -65,8 +70,10 @@ const SidebarFilters: React.FC<{
               key={collection.id}
               type="button"
               onClick={() => handleCollectionSelect(collection.id)}
-              className={`px-4 py-2 rounded whitespace-nowrap ${
-                selectedCollection === collection.id ? 'bg-primary text-white' : 'bg-gray'
+              className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors ${
+                selectedCollection === collection.id 
+                  ? 'bg-primary text-white shadow-md' 
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
               }`}
             >
               {collection.title}
@@ -102,7 +109,7 @@ const SidebarFilters: React.FC<{
             <div className="block text-sm font-medium">Min price</div>
             <div className="relative mt-1 rounded-md">
               <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-neutral-500 sm:text-sm">
-                $
+                {currency}
               </span>
               <input
                 placeholder='0'
@@ -117,7 +124,7 @@ const SidebarFilters: React.FC<{
             <div className="block text-sm font-medium">Max price</div>
             <div className="relative mt-1 rounded-md">
               <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-neutral-500 sm:text-sm">
-                $
+                {currency}
               </span>
               <input
                 placeholder='2000'
