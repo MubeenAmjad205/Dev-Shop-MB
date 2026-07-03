@@ -11,6 +11,11 @@ import SectionProductHeader from './SectionProductHeader';
 import Loading from '@/app/loading';
 import Link from 'next/link';
 
+import ProductFeatures from './ProductFeatures';
+import ProductReviews from './ProductReviews';
+import StickyAddToCart from './StickyAddToCart';
+import ProductSlider from '@/components/ProductSlider';
+
 type Props = {
   params: Promise<{ productId: string }>;
 };
@@ -80,7 +85,7 @@ const SingleProductPage = (props: Props) => {
     <div className="container">
       <SectionNavigation />
 
-      <div className="mb-20">
+      <div className="mb-10">
         <SectionProductHeader
           shots={productData.shots}
           productData={productData}
@@ -92,6 +97,22 @@ const SingleProductPage = (props: Props) => {
           reviews={productData.reviews}
         />
       </div>
+
+      <hr className="border-neutral-200 dark:border-neutral-800" />
+      
+      <ProductFeatures />
+      
+      <div className="my-24">
+        <hr className="border-neutral-200 dark:border-neutral-800 mb-24" />
+        <ProductReviews />
+      </div>
+
+      <div className="mt-24 mb-32 bg-neutral-50 dark:bg-neutral-800/20 -mx-4 px-4 py-16 sm:-mx-8 sm:px-8 lg:-mx-20 lg:px-20 rounded-3xl">
+        <h2 className="text-3xl font-bold mb-10 text-center">You Might Also Like</h2>
+        <ProductSlider />
+      </div>
+
+      <StickyAddToCart productData={productData} />
     </div>
   );
 };

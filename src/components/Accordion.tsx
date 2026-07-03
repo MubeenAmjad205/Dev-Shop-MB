@@ -1,14 +1,14 @@
 import React from 'react';
 
-const Accordion = ({ question, answer, wfull }: any) => {
+const Accordion = ({ question, answer, wfull, small }: any) => {
   return (
     <div className="">
       <details
         className={`group ${
           wfull ? 'w-full' : 'w-full max-w-2xl'
-        } rounded-lg shadow-md`}
+        } rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800`}
       >
-        <summary className="flex w-full cursor-pointer list-none items-center gap-4 rounded-lg px-6 py-10">
+        <summary className={`flex w-full cursor-pointer list-none items-center gap-4 rounded-lg px-6 ${small ? 'py-4' : 'py-10'}`}>
           <div className="">
             <svg
               xmlns="http://www.w3.org/2000/svg"
