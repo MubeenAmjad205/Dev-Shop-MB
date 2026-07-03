@@ -26,7 +26,7 @@ interface SectionProductHeaderProps {
   shoeName: string;
   prevPrice: number;
   currentPrice: number;
-  rating: number;
+  rating: number | string;
   pieces_sold: number;
   reviews: number;
 }
