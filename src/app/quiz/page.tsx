@@ -1,0 +1,328 @@
+'use client';
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import ButtonPrimary from '@/shared/Button/ButtonPrimary';
+import Input from '@/shared/Input/Input';
+
+const TOTAL_STEPS = 5;
+
+const ageOptions = [
+  { id: '0-24m', label: '0-24 Months', icon: '🍼' },
+  { id: '2-4y', label: '2-4 Years', icon: '🧸' },
+  { id: '5-7y', label: '5-7 Years', icon: '🎨' },
+  { id: '8y+', label: '8+ Years', icon: '🚀' },
+];
+
+const categoryOptions = [
+  { id: 'boy', label: 'Boy', icon: '👦' },
+  { id: 'girl', label: 'Girl', icon: '👧' },
+  { id: 'neutral', label: 'Neutral', icon: '🌟' },
+];
+
+const interestOptions = [
+  { id: 'building', label: 'Building & Logic', icon: '🧱' },
+  { id: 'creative', label: 'Arts & Crafts', icon: '🎨' },
+  { id: 'active', label: 'Outdoor Play', icon: '⚽' },
+  { id: 'plush', label: 'Plush Toys', icon: '🧸' },
+];
+
+const budgetOptions = [
+  { id: '20', label: 'Under $20', icon: '💵' },
+  { id: '50', label: 'Under $50', icon: '🎁' },
+  { id: '100', label: 'Under $100', icon: '💎' },
+  { id: 'any', label: 'No limit', icon: '👑' },
+];
+
+export default function QuizPage() {
+  const router = useRouter();
+  const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1);
+
+  // Form State
+  const [age, setAge] = useState('');
+  const [category, setCategory] = useState('');
+  const [interests, setInterests] = useState<string[]>([]);
+  const [budget, setBudget] = useState('');
+  const [contact, setContact] = useState({ name: '', phone: '', email: '' });
+
+  const nextStep = () => {
+    setDirection(1);
+    setStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
+  };
+
+  const prevStep = () => {
+    setDirection(-1);
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleInterestToggle = (id: string) => {
+    setInterests((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate BE submission and redirect to results
+    const query = new URLSearchParams();
+    if (age) query.set('age', age);
+    if (category && category !== 'neutral') query.set('category', category);
+    if (budget && budget !== 'any') query.set('maxPrice', budget);
+    
+    router.push(`/products?${query.toString()}`);
+  };
+
+  const canProceed = () => {
+    if (step === 1) return !!age;
+    if (step === 2) return !!category;
+    if (step === 3) return interests.length > 0;
+    if (step === 4) return !!budget;
+    return true; // Step 5 has optional/text fields checked on submit
+  };
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 50 : -50,
+      opacity: 0,
+    }),
+  };
+
+  return (
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-10 px-4 flex items-center justify-center">
+      <div className="w-full max-w-[420px] bg-white dark:bg-neutral-800 rounded-[2.5rem] shadow-2xl overflow-hidden border-[8px] border-neutral-900 dark:border-neutral-700 relative h-[800px] flex flex-col">
+        
+        {/* Notch */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-neutral-900 dark:bg-neutral-700 rounded-b-3xl z-20" />
+
+        {/* Header */}
+        <div className="pt-12 pb-4 px-6 border-b border-neutral-100 dark:border-neutral-700 flex items-center justify-between">
+          <button 
+            onClick={step > 1 ? prevStep : () => router.push('/')}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+          >
+            ←
+          </button>
+          <div className="font-extrabold text-lg tracking-wider text-neutral-900 dark:text-white">
+            <span className="text-teal-500">TOY</span>ZONE<span className="text-teal-500 text-sm">.pk</span>
+          </div>
+          <div className="w-8" /> {/* Spacer */}
+        </div>
+
+        {/* Progress Bar */}
+        <div className="px-6 py-4 flex gap-2">
+          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+            <div key={i} className="h-1.5 flex-1 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
+              <div 
+                className={`h-full bg-teal-500 transition-all duration-500 ${i < step ? 'w-full' : 'w-0'}`} 
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 relative overflow-hidden px-6">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ x: { type: 'spring', stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
+              className="absolute inset-0 px-6 py-4 h-full overflow-y-auto hiddenScrollbar"
+            >
+              
+              {/* STEP 1: AGE */}
+              {step === 1 && (
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <span className="inline-block px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full text-xs font-bold">Step 1 of 5</span>
+                    <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white">Who are we shopping for?</h2>
+                    <p className="text-neutral-500 text-sm">Select the age group to get perfect matches.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-8">
+                    {ageOptions.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => { setAge(opt.id); setTimeout(nextStep, 300); }}
+                        className={`flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all duration-200 ${
+                          age === opt.id 
+                            ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' 
+                            : 'border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:border-teal-200'
+                        }`}
+                      >
+                        <span className="text-4xl">{opt.icon}</span>
+                        <span className="font-bold text-sm text-neutral-800 dark:text-neutral-200">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: CATEGORY */}
+              {step === 2 && (
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <span className="inline-block px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full text-xs font-bold">Step 2 of 5</span>
+                    <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white">Boy or Girl?</h2>
+                    <p className="text-neutral-500 text-sm">This helps us tailor the aesthetic.</p>
+                  </div>
+                  <div className="space-y-4 mt-8">
+                    {categoryOptions.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => { setCategory(opt.id); setTimeout(nextStep, 300); }}
+                        className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-200 ${
+                          category === opt.id 
+                            ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' 
+                            : 'border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:border-teal-200'
+                        }`}
+                      >
+                        <span className="text-3xl">{opt.icon}</span>
+                        <span className="font-bold text-base text-neutral-800 dark:text-neutral-200">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: INTERESTS */}
+              {step === 3 && (
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <span className="inline-block px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full text-xs font-bold">Step 3 of 5</span>
+                    <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white">What do they love?</h2>
+                    <p className="text-neutral-500 text-sm">Select one or more interests.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-8">
+                    {interestOptions.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => handleInterestToggle(opt.id)}
+                        className={`flex flex-col items-center gap-3 p-5 rounded-3xl border-2 transition-all duration-200 ${
+                          interests.includes(opt.id)
+                            ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' 
+                            : 'border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:border-teal-200'
+                        }`}
+                      >
+                        <span className="text-3xl">{opt.icon}</span>
+                        <span className="font-bold text-xs text-neutral-800 dark:text-neutral-200 text-center">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: BUDGET */}
+              {step === 4 && (
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <span className="inline-block px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full text-xs font-bold">Step 4 of 5</span>
+                    <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white">Set a budget</h2>
+                    <p className="text-neutral-500 text-sm">We'll find the best options in your range.</p>
+                  </div>
+                  <div className="space-y-4 mt-8">
+                    {budgetOptions.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => { setBudget(opt.id); setTimeout(nextStep, 300); }}
+                        className={`w-full flex items-center justify-between p-5 rounded-2xl border-2 transition-all duration-200 ${
+                          budget === opt.id 
+                            ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' 
+                            : 'border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:border-teal-200'
+                        }`}
+                      >
+                        <span className="font-bold text-base text-neutral-800 dark:text-neutral-200">{opt.label}</span>
+                        <span className="text-2xl">{opt.icon}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 5: CONTACT (From Screenshot) */}
+              {step === 5 && (
+                <form id="quiz-form" onSubmit={handleSubmit} className="space-y-6 h-full flex flex-col">
+                  <div className="text-center space-y-2">
+                    <span className="inline-block px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full text-xs font-bold">Step 5 of 5</span>
+                    <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white leading-tight">Your picks are almost ready</h2>
+                    <p className="text-neutral-500 text-sm">Share your details so Toyzone can save your recommendations and help faster.</p>
+                  </div>
+                  <div className="space-y-5 mt-6 flex-1">
+                    <div>
+                      <label className="block text-sm font-bold text-neutral-900 dark:text-white mb-2">Name</label>
+                      <Input 
+                        placeholder="Your name" 
+                        required 
+                        className="rounded-2xl"
+                        value={contact.name}
+                        onChange={(e) => setContact({...contact, name: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-neutral-900 dark:text-white mb-2">Phone</label>
+                      <Input 
+                        type="tel" 
+                        placeholder="03XXXXXXXXX" 
+                        required 
+                        className="rounded-2xl"
+                        value={contact.phone}
+                        onChange={(e) => setContact({...contact, phone: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-neutral-900 dark:text-white mb-2">Email <span className="font-normal text-neutral-400">(optional)</span></label>
+                      <Input 
+                        type="email" 
+                        placeholder="you@example.com" 
+                        className="rounded-2xl"
+                        value={contact.email}
+                        onChange={(e) => setContact({...contact, email: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                </form>
+              )}
+
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-6 bg-white dark:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-700 z-10">
+          {step < TOTAL_STEPS ? (
+            <ButtonPrimary 
+              className="w-full rounded-2xl py-4 font-bold bg-teal-500 hover:bg-teal-600 text-lg shadow-lg shadow-teal-500/30"
+              disabled={!canProceed()}
+              onClick={nextStep}
+            >
+              Continue
+            </ButtonPrimary>
+          ) : (
+            <ButtonPrimary 
+              type="submit"
+              form="quiz-form"
+              className="w-full rounded-2xl py-4 font-bold bg-teal-500 hover:bg-teal-600 text-lg shadow-lg shadow-teal-500/30"
+            >
+              Show My Picks 🎁
+            </ButtonPrimary>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+}

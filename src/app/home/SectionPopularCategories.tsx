@@ -10,72 +10,64 @@ const popularCategories = [
     title: 'Plush Toys',
     subtitle: 'Cuddly companions for every night',
     emoji: '🧸',
-    bg: 'bg-amber-50 dark:bg-amber-900/20',
-    ringColor: 'ring-amber-200 dark:ring-amber-700',
-    accentText: 'text-amber-600 dark:text-amber-400',
+    bg: 'bg-[#fffdf2]',
+    borderColor: 'border-[#fde68a]',
     href: '/products?category=plush',
   },
   {
     title: 'Arts & Crafts',
     subtitle: 'Unleash the inner artist',
     emoji: '🎨',
-    bg: 'bg-blue-50 dark:bg-blue-900/20',
-    ringColor: 'ring-blue-200 dark:ring-blue-700',
-    accentText: 'text-blue-600 dark:text-blue-400',
+    bg: 'bg-[#f0f7ff]',
+    borderColor: 'border-[#bfdbfe]',
     href: '/products?category=arts',
   },
   {
     title: 'Educational',
     subtitle: 'Learn while having fun',
     emoji: '🔬',
-    bg: 'bg-teal-50 dark:bg-teal-900/20',
-    ringColor: 'ring-teal-200 dark:ring-teal-700',
-    accentText: 'text-teal-600 dark:text-teal-400',
+    bg: 'bg-[#f0fdf4]',
+    borderColor: 'border-[#bbf7d0]',
     href: '/products?category=educational',
   },
   {
     title: 'Dolls & Figures',
     subtitle: 'Adventures in imagination',
     emoji: '🎀',
-    bg: 'bg-pink-50 dark:bg-pink-900/20',
-    ringColor: 'ring-pink-200 dark:ring-pink-700',
-    accentText: 'text-pink-600 dark:text-pink-400',
+    bg: 'bg-[#fdf2f8]',
+    borderColor: 'border-[#fbcfe8]',
     href: '/products?category=dolls',
   },
   {
     title: 'Outdoor Play',
     subtitle: 'Fun under the open sky',
     emoji: '⚽',
-    bg: 'bg-green-50 dark:bg-green-900/20',
-    ringColor: 'ring-green-200 dark:ring-green-700',
-    accentText: 'text-green-600 dark:text-green-400',
+    bg: 'bg-[#f0fdf4]',
+    borderColor: 'border-[#bbf7d0]',
     href: '/products?category=outdoor',
   },
   {
     title: 'Building Sets',
     subtitle: 'Design, build, create',
     emoji: '🧱',
-    bg: 'bg-orange-50 dark:bg-orange-900/20',
-    ringColor: 'ring-orange-200 dark:ring-orange-700',
-    accentText: 'text-orange-600 dark:text-orange-400',
+    bg: 'bg-[#fff7ed]',
+    borderColor: 'border-[#fed7aa]',
     href: '/products?category=building',
   },
   {
     title: 'Puzzles',
     subtitle: 'Challenge the young mind',
     emoji: '🧩',
-    bg: 'bg-violet-50 dark:bg-violet-900/20',
-    ringColor: 'ring-violet-200 dark:ring-violet-700',
-    accentText: 'text-violet-600 dark:text-violet-400',
+    bg: 'bg-[#faf5ff]',
+    borderColor: 'border-[#e9d5ff]',
     href: '/products?category=puzzles',
   },
   {
     title: 'Baby Care',
     subtitle: 'Safe essentials for little ones',
     emoji: '🍼',
-    bg: 'bg-cyan-50 dark:bg-cyan-900/20',
-    ringColor: 'ring-cyan-200 dark:ring-cyan-700',
-    accentText: 'text-cyan-600 dark:text-cyan-400',
+    bg: 'bg-[#ecfeff]',
+    borderColor: 'border-[#a5f3fc]',
     href: '/products?category=care',
   },
 ];
@@ -111,15 +103,15 @@ const SectionPopularCategories = () => {
         {popularCategories.map((cat, index) => (
           <motion.div key={index} variants={scaleUp} custom={index * 0.06}>
             <Link href={cat.href} className="block group">
-              <div className={`${cat.bg} ring-2 ${cat.ringColor} rounded-3xl p-6 flex flex-col gap-4 transition-all duration-400 group-hover:-translate-y-2 group-hover:shadow-xl`}>
-                <div className="w-16 h-16 bg-white dark:bg-neutral-900 rounded-2xl shadow-md flex items-center justify-center text-3xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+              <div className={`${cat.bg} border ${cat.borderColor} rounded-[1.5rem] p-5 md:p-6 flex flex-col gap-5 transition-all duration-400 group-hover:-translate-y-2 group-hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)]`}>
+                <div className="w-[3.5rem] h-[3.5rem] bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] flex items-center justify-center text-3xl transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
                   {cat.emoji}
                 </div>
                 <div>
-                  <h3 className={`font-bold text-lg text-neutral-900 dark:text-white group-hover:${cat.accentText} transition-colors`}>
+                  <h3 className="font-bold text-lg text-neutral-900 mb-1">
                     {cat.title}
                   </h3>
-                  <p className="text-sm text-neutral-500 mt-1 leading-snug">{cat.subtitle}</p>
+                  <p className="text-sm text-neutral-500 font-medium">{cat.subtitle}</p>
                 </div>
               </div>
             </Link>

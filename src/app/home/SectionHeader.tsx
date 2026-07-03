@@ -5,7 +5,6 @@ import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import { headerSection } from '@/data/content';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import airForce1 from '@/images/airForce1.webp';
 import { motion } from 'framer-motion';
 import { slideLeft, slideRight } from '@/shared/utils/animations';
 
@@ -46,12 +45,18 @@ const SectionHeader = () => {
             Shop Now
           </ButtonPrimary>
         </div>
-        <div className="basis-[37%] flex items-center justify-center">
+        <div className="basis-[37%] flex items-center justify-center relative">
           <motion.div
             animate={{ y: [0, -12, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
           >
-            <Image src={airForce1} alt="Featured toy" className="w-full drop-shadow-2xl" />
+            <Image
+              src="/images/hero-toys.png"
+              alt="Premium kids toy box"
+              width={600}
+              height={600}
+              className="w-full drop-shadow-2xl rounded-3xl"
+            />
           </motion.div>
         </div>
       </motion.div>
