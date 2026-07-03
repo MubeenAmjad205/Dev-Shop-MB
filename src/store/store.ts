@@ -26,7 +26,7 @@ const loadState = (): Partial<RootState> | undefined => {
   }
 };
 
-const saveState = (state: RootState) => {
+const saveState = (state: Partial<RootState>) => {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('appState', serializedState);
