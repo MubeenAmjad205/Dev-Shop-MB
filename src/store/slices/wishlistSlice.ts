@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface WishlistState {
+export interface WishlistState {
   items: string[];
 }
 
