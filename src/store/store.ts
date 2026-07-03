@@ -1,8 +1,15 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import cartReducer, { CartState } from './slices/cartSlice';
-import wishlistReducer from './slices/wishlistSlice';
+import wishlistReducer, { WishlistState } from './slices/wishlistSlice';
 
-const loadState = (): any => {
+const rootReducer = combineReducers({
+  cart: cartReducer,
+  wishlist: wishlistReducer,
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
+
+const loadState = (): Partial<RootState> | undefined => {
   try {
     const serializedState = localStorage.getItem('appState');
     if (serializedState === null) {
@@ -17,7 +24,7 @@ const loadState = (): any => {
   }
 };
 
-const saveState = (state: any) => {
+const saveState = (state: RootState) => {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('appState', serializedState);
@@ -28,10 +35,7 @@ const saveState = (state: any) => {
 const preloadedState = loadState();
 
 export const store = configureStore({
-  reducer: {
-    cart: cartReducer,
-    wishlist: wishlistReducer,
-  },
+  reducer: rootReducer,
   preloadedState,
 });
 
@@ -42,8 +46,7 @@ store.subscribe(() => {
   });
 });
 
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 // Re-export CartState so that it can be named.
-export type { CartState };
+export type { CartState, WishlistState };
