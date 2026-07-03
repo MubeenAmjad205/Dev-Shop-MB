@@ -12,8 +12,8 @@ const priceRanges = [
     label: 'Under $20',
     description: 'Everyday fun & pocket-friendly surprises',
     image: priceRangeImages.under20,
-    bgFrom: 'from-sky-400',
-    bgTo: 'to-blue-500',
+    bgFrom: 'from-[#419ffd]',
+    bgTo: 'to-[#2b7dfb]',
     emoji: '💙',
     href: '/products?maxPrice=20',
   },
@@ -21,8 +21,8 @@ const priceRanges = [
     label: 'Under $50',
     description: 'Perfect gifts that kids will love',
     image: priceRangeImages.under50,
-    bgFrom: 'from-fuchsia-400',
-    bgTo: 'to-pink-500',
+    bgFrom: 'from-[#eb6bf8]',
+    bgTo: 'to-[#f84fa3]',
     emoji: '🎀',
     href: '/products?maxPrice=50',
   },
@@ -30,8 +30,8 @@ const priceRanges = [
     label: 'Under $100',
     description: 'Premium sets & unforgettable playsets',
     image: priceRangeImages.under100,
-    bgFrom: 'from-emerald-400',
-    bgTo: 'to-teal-500',
+    bgFrom: 'from-[#55e3a8]',
+    bgTo: 'to-[#24c1a5]',
     emoji: '🌟',
     href: '/products?maxPrice=100',
   },
@@ -39,8 +39,8 @@ const priceRanges = [
     label: 'Over $100',
     description: 'The ultimate luxury experience for kids',
     image: priceRangeImages.over100,
-    bgFrom: 'from-orange-400',
-    bgTo: 'to-primary',
+    bgFrom: 'from-[#ff854a]',
+    bgTo: 'to-[#ff4c3b]',
     emoji: '👑',
     href: '/products?minPrice=100',
   },
@@ -77,35 +77,31 @@ const SectionPickYourPrice = () => {
         {priceRanges.map((range, index) => (
           <motion.div key={index} variants={scaleUp} custom={index * 0.08}>
             <Link href={range.href} className="block group h-full">
-              <div className={`relative h-72 rounded-3xl overflow-hidden bg-gradient-to-b ${range.bgFrom} ${range.bgTo} shadow-lg transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl`}>
-                {/* Background image with overlay */}
-                <Image
-                  src={range.image}
-                  alt={range.label}
-                  fill
-                  className="object-cover mix-blend-overlay opacity-30 transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                />
+              <div className={`relative h-72 rounded-[2rem] overflow-hidden bg-gradient-to-br ${range.bgFrom} ${range.bgTo} shadow-lg transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl`}>
+                
+                {/* Decorative subtle gradient orb instead of an image */}
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-black/5 rounded-full blur-3xl" />
 
                 {/* Price tag */}
                 <div className="absolute top-5 left-5 z-10">
-                  <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-2xl px-4 py-2 shadow-lg">
-                    <span className="text-lg font-extrabold drop-shadow">{range.label}</span>
+                  <div className="bg-white/30 backdrop-blur-md border border-white/40 text-white rounded-2xl px-5 py-2 shadow-sm">
+                    <span className="text-lg font-bold">{range.label}</span>
                   </div>
                 </div>
 
                 {/* Floating emoji */}
-                <div className="absolute top-4 right-4 z-10 text-4xl drop-shadow-lg group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300">
+                <div className="absolute top-6 right-6 z-10 text-3xl drop-shadow-md group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-300">
                   {range.emoji}
                 </div>
 
                 {/* Bottom info */}
-                <div className="absolute bottom-0 left-0 right-0 z-10 p-5">
-                  <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                    <p className="text-white text-sm font-semibold leading-snug drop-shadow">
+                <div className="absolute bottom-5 left-5 right-5 z-10">
+                  <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 border border-white/30 shadow-sm flex flex-col justify-between h-24">
+                    <p className="text-white text-sm font-semibold leading-tight drop-shadow-sm">
                       {range.description}
                     </p>
-                    <div className="flex items-center gap-1 mt-3 text-white/80 text-sm font-bold group-hover:text-white transition-colors">
+                    <div className="flex items-center gap-1 mt-auto text-white text-sm font-bold group-hover:text-white transition-colors">
                       <span>Browse all</span>
                       <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />

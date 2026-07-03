@@ -6,7 +6,7 @@ import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import { MdCheckCircle } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import { fadeUp, slideLeft, slideRight } from '@/shared/utils/animations';
-import { bannerImages } from '@/shared/constants/images';
+import { useRouter } from 'next/navigation';
 
 const features = [
   { label: 'Age Appropriate', icon: '🎯' },
@@ -16,6 +16,8 @@ const features = [
 ];
 
 const SectionPerfectToy = () => {
+  const router = useRouter();
+
   return (
     <div className="container py-20">
       <div className="relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50 dark:from-neutral-900 dark:to-slate-900 border border-neutral-100 dark:border-neutral-800 shadow-xl">
@@ -62,9 +64,13 @@ const SectionPerfectToy = () => {
               ))}
             </div>
 
-            <ButtonPrimary sizeClass="px-8 py-4 rounded-full shadow-lg text-base">
-              Take the Quiz — It's Free
+            <ButtonPrimary 
+              sizeClass="px-8 py-4 rounded-full shadow-lg text-base"
+              onClick={() => router.push('/quiz')}
+            >
+              ✨ Find the perfect toy
             </ButtonPrimary>
+            <span className="text-xs text-neutral-500 font-bold ml-4">🔒 Free - No account needed</span>
           </motion.div>
 
           {/* Right – Realistic phone mockup with image */}
