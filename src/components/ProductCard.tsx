@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import type { FC } from 'react';
 import React from 'react';
+import globalConfig from '@/core/config/global.json';
 
 import type { ProductType } from '@/data/types';
 
@@ -47,19 +48,17 @@ const ProductCard: FC<ProductCardProps> = ({
       <div className="mt-3">
         <div className="flex items-start justify-between">
           <h3 className="font-semibold line-clamp-2 pr-4">{product.title}</h3>
-          <p
-            className={`text-neutral-500 ${
-              showPrevPrice ? 'block' : 'hidden'
-            } text-sm line-through`}
-          >
-            ${product.previousPrice}
-          </p>
+          {showPrevPrice && product.previousPrice && (
+            <p className="text-neutral-500 text-sm line-through">
+              {globalConfig.currency.symbol}{product.previousPrice}
+            </p>
+          )}
         </div>
 
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-neutral-500">{product.shoeCategory}</p>
-          <p className="text-lg font-medium text-primary">
-            ${product.price}
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-sm text-neutral-500 truncate pr-2">{product.shoeCategory || product.vendor || ''}</p>
+          <p className="text-lg font-medium text-primary whitespace-nowrap">
+            {globalConfig.currency.symbol}{product.price}
           </p>
         </div>
       </div>
