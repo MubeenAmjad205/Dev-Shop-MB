@@ -8,6 +8,8 @@ export const GET_PRODUCT_BY_HANDLE = gql`
       id
       title
       description
+      descriptionHtml
+      vendor
       handle
       images(first: 5) {
         edges {
@@ -27,10 +29,12 @@ export const GET_PRODUCT_BY_HANDLE = gql`
           currencyCode
         }
       }
-      variants(first: 1) {
+      variants(first: 10) {
         edges {
           node {
             id
+            title
+            availableForSale
             price {
               amount
               currencyCode

@@ -47,7 +47,7 @@ export const topNavLinks: NavItemType[] = [
     href: '/home',
   },
   {
-    id: 'ee46t',
+    id: 'ee47t',
     name: 'Products',
     href: '/products',
   },

@@ -142,14 +142,14 @@ export default function Slider<T>({
           {currentIndex && !hideNextPrev ? (
             <PrevBtn
               onClick={() => changeItemId(currentIndex - 1)}
-              className={`absolute -left-3 z-[1] h-9 w-9 text-lg xl:-left-6 xl:h-12 xl:w-12 ${arrowBtnClass}`}
+              className={`absolute -left-5 z-[1] h-10 w-10 text-lg xl:-left-8 xl:h-12 xl:w-12 ${arrowBtnClass}`}
             />
           ) : null}
 
           {data.length > currentIndex + numberOfItems && !hideNextPrev ? (
             <NextBtn
               onClick={() => changeItemId(currentIndex + 1)}
-              className={`absolute -right-3 z-[1] h-9 w-9 bg-white text-lg xl:-right-6 xl:h-12 xl:w-12 ${arrowBtnClass}`}
+              className={`absolute -right-5 z-[1] h-10 w-10 text-lg xl:-right-8 xl:h-12 xl:w-12 ${arrowBtnClass}`}
             />
           ) : null}
         </div>

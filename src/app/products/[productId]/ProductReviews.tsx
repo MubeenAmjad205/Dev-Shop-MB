@@ -1,14 +1,14 @@
 import React from 'react';
 import { MdStar } from 'react-icons/md';
 
-const ProductReviews = () => {
+const ProductReviews = ({ rating, reviews }: { rating: string | number; reviews: number }) => {
   return (
     <div className="mt-24">
-      <h2 className="text-2xl font-bold mb-8">Customer Reviews</h2>
+      <h2 className="text-2xl font-bold mb-8">Customer Reviews ({reviews})</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
         <div className="md:col-span-1 bg-neutral-50 dark:bg-neutral-800/50 p-8 rounded-2xl border border-neutral-100 dark:border-neutral-800">
           <div className="flex items-end gap-3 mb-4">
-            <span className="text-6xl font-bold">4.8</span>
+            <span className="text-6xl font-bold">{rating}</span>
             <span className="text-neutral-500 mb-2 font-medium">out of 5</span>
           </div>
           <div className="flex items-center text-yellow-400 text-2xl mb-8">
