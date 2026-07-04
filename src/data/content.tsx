@@ -697,23 +697,23 @@ export const shoeSizes = [
 ];
 
 export const note =
-  ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vitae, est eum magnam doloremque, at adipisci debitis, similique dolores ipsa unde necessitatibus vero quibusdam nostrum numquam!';
+  'Please note that actual product packaging and materials may contain additional and/or different information than what is shown on our website. We recommend that you do not rely solely on the information presented and always read labels, warnings, and directions before using or consuming a product.';
 
 export const contactSection = {
   heading: 'Contact us',
   description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis quis phasellus eleifend tellus orci ornare.',
+    'Have a question about a product, your order, or just want to say hi? We would love to hear from you.',
   directContactInfoHeader: {
     heading: 'Prefer to reach out directly?',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nibh magna sit diam pharetra.',
+      'Choose the department that best fits your inquiry, and our team will get back to you within 24 hours.',
   },
   directContactInfo: [
     {
       icon: <FiBox className="text-5xl" />,
       title: 'Sales',
       description:
-        'Lorem ipsum dolor sit amet consectetur adipiscing elit blandit velit semper aliquam.',
+        'For questions regarding bulk orders, corporate gifting, or wholesale inquiries.',
       contactLink: {
         href: 'mailto:sales@hotkicks.com',
         title: 'sales@hotkicks.com',
@@ -723,7 +723,7 @@ export const contactSection = {
       icon: <IoChatboxOutline className="text-5xl" />,
       title: 'Support',
       description:
-        'Lorem ipsum dolor sit amet consectetur adipiscing elit blandit velit semper aliquam.',
+        'For questions about your current order, returns, shipping, or general assistance.',
       contactLink: {
         href: 'mailto:support@hotckicks.com',
         title: 'support@hotckicks.com',
@@ -733,7 +733,7 @@ export const contactSection = {
       icon: <MdOutlineCameraAlt className="text-5xl" />,
       title: 'Influencers',
       description:
-        'Lorem ipsum dolor sit amet consectetur adipiscing elit blandit velit semper aliquam.',
+        'Interested in collaborating with Dev Shop MB? Reach out to our marketing team.',
       contactLink: {
         href: 'mailto:influencers@hotckicks.com',
         title: 'influencers@hotckicks.com',
@@ -752,7 +752,7 @@ export const contactSection = {
 export const faqsData = {
   heading: 'Frequently Asked Questions',
   description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eget adipiscing nibh nunc. Velit rhoncus arcu velesaed.',
+    'Find answers to our most common questions regarding shipping, returns, product quality, and more.',
   faqs: [
     {
       category: 'Shipping',
