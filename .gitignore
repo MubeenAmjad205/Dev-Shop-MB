@@ -47,7 +47,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*
 
 # local folder
 local
@@ -56,3 +55,4 @@ local
 .vercel
 
 yarn.lock
+config.bat
